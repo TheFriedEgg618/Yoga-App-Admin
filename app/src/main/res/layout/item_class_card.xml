@@ -74,15 +74,13 @@ android:elevation="4dp">
         android:textSize="12sp"/>
 </LinearLayout>
 
-<ImageView
-    android:id="@+id/ivClassArrow"
-    android:layout_width="24dp"
-    android:layout_height="24dp"
-    android:src="@drawable/ic_arrow_right_black_24dp"
-    android:contentDescription="View class details"
-    app:tint="@color/text_dark_grey"
-    app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintTop_toTopOf="parent"
-    app:layout_constraintBottom_toBottomOf="parent"/>
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/ivClassArrow"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:background="@drawable/ic_arrow_right_black_24dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
