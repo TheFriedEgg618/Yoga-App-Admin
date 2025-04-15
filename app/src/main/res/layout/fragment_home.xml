@@ -103,7 +103,7 @@
         tools:listitem="@layout/item_class_card" />
 
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnBookClass"
+        android:id="@+id/btnAddClass"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
@@ -111,7 +111,7 @@
         android:layout_marginBottom="96dp"
         android:paddingTop="14dp"
         android:paddingBottom="14dp"
-        android:text="BOOK A CLASS"
+        android:text="ADD A CLASS"
         android:textColor="@android:color/black"
         android:textSize="16sp"
         app:backgroundTint="@color/button_orange_yellow"

@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".fragment.AddClassFragment">
+
+    <ImageButton
+        android:id="@+id/buttonBack"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:src="@drawable/ic_arrow_back_black_24dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="Back"
+        android:padding="8dp"
+        app:tint="?android:attr/textColorPrimary"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp" />
+
+    <TextView
+        android:id="@+id/tvAddClassTitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Add New Class"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:gravity="center_vertical"
+        android:minHeight="48dp"
+        app:layout_constraintTop_toTopOf="@+id/buttonBack"
+        app:layout_constraintBottom_toBottomOf="@+id/buttonBack"
+        app:layout_constraintStart_toEndOf="@+id/buttonBack"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="16dp"/>
+
+    <ScrollView
+        app:layout_constraintTop_toBottomOf="@+id/buttonBack"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:context=".fragment.AddClassFragment">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Day of Week *"
+                android:labelFor="@+id/spinnerDayOfWeek"
+                style="@style/TextAppearance.AppCompat.Caption" />
+
+            <Spinner
+                android:id="@+id/spinnerDayOfWeek"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="48dp"
+                android:layout_marginBottom="8dp" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Time *"
+                android:labelFor="@+id/editTextTime"
+                style="@style/TextAppearance.AppCompat.Caption"/>
+
+            <EditText
+                android:id="@+id/editTextTime"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="48dp"
+                android:hint="e.g., 10:00"
+                android:inputType="text"
+                android:layout_marginBottom="8dp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Capacity *"
+                android:labelFor="@+id/editTextCapacity"
+                style="@style/TextAppearance.AppCompat.Caption"/>
+
+            <EditText
+                android:id="@+id/editTextCapacity"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="48dp"
+                android:hint="e.g., 15"
+                android:inputType="number"
+                android:layout_marginBottom="8dp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Duration (minutes) *"
+                android:labelFor="@+id/editTextDuration"
+                style="@style/TextAppearance.AppCompat.Caption"/>
+
+            <EditText
+                android:id="@+id/editTextDuration"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="48dp"
+                android:hint="e.g., 60"
+                android:inputType="number"
+                android:layout_marginBottom="8dp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Price (£) *"
+                android:labelFor="@+id/editTextPrice"
+                style="@style/TextAppearance.AppCompat.Caption"/>
+
+            <EditText
+                android:id="@+id/editTextPrice"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="48dp"
+                android:hint="e.g., 10.00"
+                android:inputType="numberDecimal"
+                android:layout_marginBottom="8dp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Type of Class *"
+                android:labelFor="@+id/spinnerClassType"
+                style="@style/TextAppearance.AppCompat.Caption"/>
+
+            <Spinner
+                android:id="@+id/spinnerClassType"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="48dp"
+                android:layout_marginBottom="8dp" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Description (Optional)"
+                android:labelFor="@+id/editTextDescription"
+                style="@style/TextAppearance.AppCompat.Caption"/>
+
+            <EditText
+                android:id="@+id/editTextDescription"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="48dp"
+                android:hint="Enter class description..."
+                android:inputType="textMultiLine"
+                android:gravity="top"
+                android:lines="3"
+                android:layout_marginBottom="16dp" />
+
+            <Button
+                android:id="@+id/buttonSaveCourse"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="16dp"
+                android:text="Save Course" />
+
+        </LinearLayout>
+    </ScrollView>
+</androidx.constraintlayout.widget.ConstraintLayout>
