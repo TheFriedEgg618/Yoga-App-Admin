@@ -1,4 +1,3 @@
-// src/main/java/com/example/yogaappadmin/viewmodel/HomeViewModel.java
 package com.example.yogaappadmin.viewmodel;
 
 import android.app.Application;
@@ -28,5 +27,10 @@ public class HomeViewModel extends AndroidViewModel {
     /** Expose immutable LiveData */
     public LiveData<List<ClassModel>> getClasses() {
         return classes;
+    }
+
+    /** Refresh data from DB */
+    public void refresh() {
+        loadClasses();
     }
 }

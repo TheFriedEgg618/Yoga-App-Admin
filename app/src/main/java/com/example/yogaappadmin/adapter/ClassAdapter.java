@@ -11,8 +11,7 @@ import com.example.yogaappadmin.model.ClassModel;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ClassAdapter
-        extends RecyclerView.Adapter<ClassAdapter.VH> {
+public class ClassAdapter extends RecyclerView.Adapter<ClassAdapter.VH> {
 
     private final List<ClassModel> data = new ArrayList<>();
 
@@ -32,30 +31,37 @@ public class ClassAdapter
     @Override
     public void onBindViewHolder(@NonNull VH h, int pos) {
         ClassModel it = data.get(pos);
-        h.tvClassName.setText(
+        // Type & Duration
+        h.tvClassTypeDuration.setText(
                 it.getType() + " - " + it.getDuration() + " MINS"
         );
-        h.tvClassDateTime.setText(
-                it.getDay() + ", @ " + it.getTime()
-        );
-        h.tvClassInstructor.setText(
-                "Cap: " + it.getCapacity()
-        );
-        h.tvClassLocation.setText(
-                "Price: £" + String.format("%.2f", it.getPrice())
-        );
+        // Date & Time
+        h.tvClassDate.setText("Date: " + it.getDay());
+        h.tvClassTime.setText("Time: " + it.getTime());
+        // Capacity & Price
+        h.tvClassCapacity.setText("Capacity: " + it.getCapacity());
+        h.tvClassPrice.setText(String.format("Price: £%.2f", it.getPrice()));
     }
 
-    @Override public int getItemCount() { return data.size(); }
+    @Override
+    public int getItemCount() {
+        return data.size();
+    }
 
     static class VH extends RecyclerView.ViewHolder {
-        TextView tvClassName, tvClassDateTime, tvClassInstructor, tvClassLocation;
+        TextView tvClassTypeDuration;
+        TextView tvClassDate;
+        TextView tvClassTime;
+        TextView tvClassCapacity;
+        TextView tvClassPrice;
+
         public VH(@NonNull View v) {
             super(v);
-            tvClassName     = v.findViewById(R.id.tvClassName);
-            tvClassDateTime = v.findViewById(R.id.tvClassDateTime);
-            tvClassInstructor = v.findViewById(R.id.tvClassCapacity);
-            tvClassLocation = v.findViewById(R.id.tvClassPrice);
+            tvClassTypeDuration = v.findViewById(R.id.tvClassTypeDuration);
+            tvClassDate         = v.findViewById(R.id.tvClassDate);
+            tvClassTime         = v.findViewById(R.id.tvClassTime);
+            tvClassCapacity     = v.findViewById(R.id.tvClassCapacity);
+            tvClassPrice        = v.findViewById(R.id.tvClassPrice);
         }
     }
 }

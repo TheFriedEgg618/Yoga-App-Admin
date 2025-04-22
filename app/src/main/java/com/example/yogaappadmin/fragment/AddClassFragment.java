@@ -3,40 +3,49 @@ package com.example.yogaappadmin.fragment;
 import android.app.TimePickerDialog;
 import android.os.Bundle;
 import android.text.InputType;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
+
 import com.example.yogaappadmin.R;
-import com.example.yogaappadmin.databinding.FragmentAddClassBinding;
 import com.example.yogaappadmin.data.DatabaseHelper;
+import com.example.yogaappadmin.databinding.FragmentAddClassBinding;
 import com.example.yogaappadmin.viewmodel.AddClassViewModel;
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.button.MaterialButtonToggleGroup;
+
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 
 public class AddClassFragment extends Fragment {
 
-    private AddClassViewModel mViewModel;
     private FragmentAddClassBinding binding;
+    private AddClassViewModel mViewModel;
     private DatabaseHelper dbHelper;
 
-    // Hold pending values after validation
-    private String pendingDay, pendingTime, pendingCapacityStr,
-            pendingDurationStr, pendingPriceStr,
-            pendingType, pendingDescription;
+    // toggle‑group for days
+    private MaterialButtonToggleGroup toggleDays;
 
-    public static AddClassFragment newInstance() {
-        return new AddClassFragment();
-    }
+    // pending values after validation
+    private String pendingDaysCsv,
+            pendingTime,
+            pendingCapacityStr,
+            pendingDurationStr,
+            pendingPriceStr,
+            pendingType,
+            pendingDescription;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -51,29 +60,24 @@ public class AddClassFragment extends Fragment {
                               @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        mViewModel = new ViewModelProvider(this)
-                .get(AddClassViewModel.class);
+        // ViewModel & DB
+        mViewModel = new ViewModelProvider(this).get(AddClassViewModel.class);
+        dbHelper   = new DatabaseHelper(requireContext());
 
-        dbHelper = new DatabaseHelper(requireContext());
-
+        setupDayToggle();
         setupSpinners();
-        setupListeners();
+        setupTimePicker();
+        setupNavigation();
+        setupSaveListener();
         observeViewModel();
     }
 
-    private void setupSpinners() {
-        List<String> days = Arrays.asList(
-                "Select Day", "Monday", "Tuesday", "Wednesday",
-                "Thursday", "Friday", "Saturday", "Sunday"
-        );
-        ArrayAdapter<String> dayAdapter = new ArrayAdapter<>(
-                requireContext(),
-                android.R.layout.simple_spinner_item,
-                days
-        );
-        dayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        binding.spinnerDayOfWeek.setAdapter(dayAdapter);
+    private void setupDayToggle() {
+        toggleDays = binding.toggleGroupDays.getRoot();
+    }
 
+    private void setupSpinners() {
+        // Class‑type spinner
         List<String> types = Arrays.asList(
                 "Select Type", "Flow Yoga", "Aerial Yoga", "Family Yoga"
         );
@@ -82,12 +86,13 @@ public class AddClassFragment extends Fragment {
                 android.R.layout.simple_spinner_item,
                 types
         );
-        typeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        typeAdapter.setDropDownViewResource(
+                android.R.layout.simple_spinner_dropdown_item
+        );
         binding.spinnerClassType.setAdapter(typeAdapter);
     }
 
-    private void setupListeners() {
-        // Time field → TimePickerDialog
+    private void setupTimePicker() {
         binding.editTextTime.setInputType(InputType.TYPE_NULL);
         binding.editTextTime.setOnClickListener(v -> showTimePicker());
         binding.editTextTime.setOnFocusChangeListener((v, hasFocus) -> {
@@ -95,35 +100,6 @@ public class AddClassFragment extends Fragment {
                 showTimePicker();
                 v.clearFocus();
             }
-        });
-
-        // Back navigation
-        binding.buttonBack.setOnClickListener(v -> {
-            NavController navController = NavHostFragment.findNavController(this);
-            navController.navigateUp();
-        });
-
-        // Save button listener
-        binding.buttonSaveCourse.setOnClickListener(v -> {
-            // Gather inputs
-            pendingDay         = binding.spinnerDayOfWeek.getSelectedItem().toString();
-            pendingTime        = binding.editTextTime.getText().toString().trim();
-            pendingCapacityStr = binding.editTextCapacity.getText().toString().trim();
-            pendingDurationStr = binding.editTextDuration.getText().toString().trim();
-            pendingPriceStr    = binding.editTextPrice.getText().toString().trim();
-            pendingType        = binding.spinnerClassType.getSelectedItem().toString();
-            pendingDescription = binding.editTextDescription.getText().toString().trim();
-
-            // Validate via ViewModel
-            mViewModel.validateAndSave(
-                    pendingDay,
-                    pendingTime,
-                    pendingCapacityStr,
-                    pendingDurationStr,
-                    pendingPriceStr,
-                    pendingType,
-                    pendingDescription
-            );
         });
     }
 
@@ -134,20 +110,64 @@ public class AddClassFragment extends Fragment {
 
         new TimePickerDialog(
                 requireContext(),
-                (dialog, selHour, selMin) ->
+                (tp, selHour, selMin) ->
                         binding.editTextTime.setText(
                                 String.format("%02d:%02d", selHour, selMin)
                         ),
                 hour, minute,
-                true // 24h mode; false for AM/PM
+                true
         ).show();
     }
 
+    private void setupNavigation() {
+        // Back arrow
+        binding.buttonBack.setOnClickListener(v -> {
+            NavController nav = NavHostFragment.findNavController(this);
+            nav.navigateUp();
+        });
+    }
+
+    private void setupSaveListener() {
+        binding.buttonSaveCourse.setOnClickListener(v -> {
+            // 1) Gather multi‑day selection
+            List<Integer> checkedIds = toggleDays.getCheckedButtonIds();
+            List<String>  days       = new ArrayList<>();
+            for (int id : checkedIds) {
+                MaterialButton btn = binding.getRoot().findViewById(id);
+                days.add(btn.getText().toString());
+            }
+            pendingDaysCsv = TextUtils.join(",", days);
+
+            // 2) Gather other inputs
+            pendingTime         = binding.editTextTime.getText().toString().trim();
+            pendingCapacityStr  = binding.editTextCapacity.getText().toString().trim();
+            pendingDurationStr  = binding.editTextDuration.getText().toString().trim();
+            pendingPriceStr     = binding.editTextPrice.getText().toString().trim();
+            pendingType         = binding.spinnerClassType.getSelectedItem().toString();
+            pendingDescription  = binding.editTextDescription.getText().toString().trim();
+
+            // 3) Validate via ViewModel
+            mViewModel.validateAndSave(
+                    pendingDaysCsv,
+                    pendingTime,
+                    pendingCapacityStr,
+                    pendingDurationStr,
+                    pendingPriceStr,
+                    pendingType,
+                    pendingDescription
+            );
+        });
+    }
+
     private void observeViewModel() {
+        // Day error → toast (toggleGroup doesn't support setError)
         mViewModel.getDayError().observe(getViewLifecycleOwner(), err -> {
-            if (err != null) Toast.makeText(getContext(), err, Toast.LENGTH_SHORT).show();
+            if (err != null) {
+                Toast.makeText(getContext(), err, Toast.LENGTH_SHORT).show();
+            }
         });
 
+        // Field errors
         mViewModel.getTimeError()
                 .observe(getViewLifecycleOwner(), binding.editTextTime::setError);
         mViewModel.getCapacityError()
@@ -157,15 +177,17 @@ public class AddClassFragment extends Fragment {
         mViewModel.getPriceError()
                 .observe(getViewLifecycleOwner(), binding.editTextPrice::setError);
         mViewModel.getTypeError().observe(getViewLifecycleOwner(), err -> {
-            if (err != null) Toast.makeText(getContext(), err, Toast.LENGTH_SHORT).show();
+            if (err != null) {
+                Toast.makeText(getContext(), err, Toast.LENGTH_SHORT).show();
+            }
         });
 
+        // Save result: on success, insert into SQLite
         mViewModel.getSaveResultSuccess().observe(getViewLifecycleOwner(), success -> {
             if (success != null) {
                 if (success) {
-                    // Insert into SQLite
-                    boolean inserted = dbHelper.insertClass(
-                            pendingDay,
+                    boolean ok = dbHelper.insertClass(
+                            pendingDaysCsv,
                             pendingTime,
                             Integer.parseInt(pendingCapacityStr),
                             Integer.parseInt(pendingDurationStr),
@@ -173,21 +195,26 @@ public class AddClassFragment extends Fragment {
                             pendingType,
                             pendingDescription
                     );
-                    if (inserted) {
-                        Toast.makeText(getContext(),
-                                        "Class Saved Successfully!", Toast.LENGTH_SHORT)
-                                .show();
-                        NavHostFragment.findNavController(this)
-                                .navigateUp();
+                    if (ok) {
+                        Toast.makeText(
+                                getContext(),
+                                "Class saved successfully!",
+                                Toast.LENGTH_SHORT
+                        ).show();
+                        NavHostFragment.findNavController(this).navigateUp();
                     } else {
-                        Toast.makeText(getContext(),
-                                        "Error saving to database.", Toast.LENGTH_SHORT)
-                                .show();
+                        Toast.makeText(
+                                getContext(),
+                                "Error saving to database.",
+                                Toast.LENGTH_SHORT
+                        ).show();
                     }
                 } else {
-                    Toast.makeText(getContext(),
-                                    "Please correct the errors.", Toast.LENGTH_SHORT)
-                            .show();
+                    Toast.makeText(
+                            getContext(),
+                            "Please correct the errors.",
+                            Toast.LENGTH_SHORT
+                    ).show();
                 }
                 mViewModel.resetSaveStatus();
             }

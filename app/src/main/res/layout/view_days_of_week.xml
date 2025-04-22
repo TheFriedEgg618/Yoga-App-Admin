@@ -1,58 +1,82 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<com.google.android.material.button.MaterialButtonToggleGroup
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/toggleGroupDays"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    android:weightSum="7">
+    android:layout_marginBottom="16dp"
+    app:singleSelection="false"
+    app:selectionRequired="true">
 
-    <Button
-        android:id="@+id/btnMonday"
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnMon"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
         android:layout_width="0dp"
         android:layout_weight="1"
-        android:layout_height="48dp"
+        android:layout_height="wrap_content"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
         android:text="Mon"/>
 
-    <Button
-        android:id="@+id/btnTuesday"
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnTue"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
         android:layout_width="0dp"
         android:layout_weight="1"
-        android:layout_height="48dp"
+        android:layout_height="wrap_content"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
         android:text="Tue"/>
 
-    <Button
-        android:id="@+id/btnWednesday"
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnWed"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
         android:layout_width="0dp"
         android:layout_weight="1"
-        android:layout_height="48dp"
+        android:layout_height="wrap_content"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
         android:text="Wed"/>
 
-    <Button
-        android:id="@+id/btnThursday"
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnThu"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
         android:layout_width="0dp"
         android:layout_weight="1"
-        android:layout_height="48dp"
+        android:layout_height="wrap_content"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
         android:text="Thu"/>
 
-    <Button
-        android:id="@+id/btnFriday"
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnFri"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
         android:layout_width="0dp"
         android:layout_weight="1"
-        android:layout_height="48dp"
+        android:layout_height="wrap_content"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
         android:text="Fri"/>
 
-    <Button
-        android:id="@+id/btnSaturday"
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnSat"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
         android:layout_width="0dp"
         android:layout_weight="1"
-        android:layout_height="48dp"
+        android:layout_height="wrap_content"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
         android:text="Sat"/>
 
-    <Button
-        android:id="@+id/btnSunday"
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnSun"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
         android:layout_width="0dp"
         android:layout_weight="1"
-        android:layout_height="48dp"
+        android:layout_height="wrap_content"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
         android:text="Sun"/>
 
-</LinearLayout>
+</com.google.android.material.button.MaterialButtonToggleGroup>

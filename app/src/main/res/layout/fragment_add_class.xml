@@ -7,7 +7,7 @@
     android:padding="16dp"
     tools:context=".fragment.AddClassFragment">
 
-    <!-- Back button + Title -->
+    <!-- Back arrow + Title -->
     <ImageButton
         android:id="@+id/buttonBack"
         android:layout_width="48dp"
@@ -33,7 +33,7 @@
         app:layout_constraintBottom_toBottomOf="@id/buttonBack"
         android:layout_marginStart="8dp"/>
 
-    <!-- Scrollable form -->
+    <!-- Form -->
     <ScrollView
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -47,21 +47,23 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <!-- Day of Week -->
+            <!-- Days of Week -->
             <TextView
                 style="@style/TextAppearance.AppCompat.Caption"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Day of Week *"
-                android:labelFor="@+id/spinnerDayOfWeek"/>
-            <Spinner
-                android:id="@+id/spinnerDayOfWeek"
+                android:text="Day(s) of Week *"
+                android:labelFor="@id/toggleGroupDays"
+                android:layout_marginBottom="4dp"/>
+
+            <include
+                android:id="@+id/toggleGroupDays"
+                layout="@layout/view_days_of_week"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:minHeight="48dp"
                 android:layout_marginBottom="16dp"/>
 
-            <!-- Time & Capacity on one row -->
+            <!-- Time & Capacity -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -69,7 +71,7 @@
                 android:weightSum="2"
                 android:layout_marginBottom="16dp">
 
-                <!-- Time field -->
+                <!-- Time -->
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_weight="1"
@@ -82,6 +84,7 @@
                         android:layout_height="wrap_content"
                         android:text="Time *"
                         android:labelFor="@+id/editTextTime"/>
+
                     <EditText
                         android:id="@+id/editTextTime"
                         android:layout_width="match_parent"
@@ -90,10 +93,10 @@
                         android:focusable="false"
                         android:clickable="true"
                         android:inputType="none"
-                        android:minHeight="48dp"/>
+                        android:minLines="1"/>
                 </LinearLayout>
 
-                <!-- Capacity field -->
+                <!-- Capacity -->
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_weight="1"
@@ -107,18 +110,18 @@
                         android:layout_height="wrap_content"
                         android:text="Capacity *"
                         android:labelFor="@+id/editTextCapacity"/>
+
                     <EditText
                         android:id="@+id/editTextCapacity"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="e.g., 15"
                         android:inputType="number"
-                        android:minHeight="48dp"/>
+                        android:minLines="1"/>
                 </LinearLayout>
             </LinearLayout>
 
-
-            <!-- Duration & Price side by side -->
+            <!-- Duration & Price -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -126,7 +129,7 @@
                 android:weightSum="2"
                 android:layout_marginBottom="16dp">
 
-                <!-- Duration field -->
+                <!-- Duration -->
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_weight="1"
@@ -146,10 +149,10 @@
                         android:layout_height="wrap_content"
                         android:hint="e.g., 60"
                         android:inputType="number"
-                        android:minHeight="48dp"/>
+                        android:minLines="1"/>
                 </LinearLayout>
 
-                <!-- Price field -->
+                <!-- Price -->
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_weight="1"
@@ -170,7 +173,7 @@
                         android:layout_height="wrap_content"
                         android:hint="e.g., 10.00"
                         android:inputType="numberDecimal"
-                        android:minHeight="48dp"/>
+                        android:minLines="1"/>
                 </LinearLayout>
             </LinearLayout>
 
@@ -185,7 +188,6 @@
                 android:id="@+id/spinnerClassType"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:minHeight="48dp"
                 android:layout_marginBottom="16dp"/>
 
             <!-- Description -->
@@ -199,20 +201,21 @@
                 android:id="@+id/editTextDescription"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="24dp"
                 android:hint="Enter class description..."
                 android:inputType="textMultiLine|textCapSentences"
                 android:gravity="top"
                 android:minLines="5"
-                android:scrollbars="vertical"/>
+                android:scrollbars="vertical"
+                android:layout_marginBottom="24dp"/>
 
             <!-- Save Button -->
             <Button
                 android:id="@+id/buttonSaveCourse"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Save Class"
+                android:text="Save Course"
                 android:layout_gravity="center_horizontal"/>
+
         </LinearLayout>
     </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>

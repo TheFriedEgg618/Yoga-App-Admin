@@ -83,6 +83,12 @@ public class HomeFragment extends Fragment {
         });
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        // Force reload of data whenever this fragment resumes
+        homeViewModel.refresh();
+    }
 
     @Override
     public void onDestroyView() {
