@@ -45,9 +45,12 @@ public class TeacherAdapter extends RecyclerView.Adapter<TeacherAdapter.VH> {
     @Override
     public void onBindViewHolder(@NonNull VH holder, int position) {
         TeacherModel teacher = data.get(position);
+        String bio = teacher.getBio();
+        if (bio.isBlank()) { bio = "N/A"; }
+
         holder.tvName.setText(teacher.getName());
-        holder.tvBio.setText(teacher.getBio());
         holder.tvClasses.setText("Teaches: " + teacher.getClassesCsv());
+        holder.tvBio.setText("Bio: " + bio);
 
         holder.btnEdit.setOnClickListener(v -> listener.onEdit(teacher));
         holder.btnDelete.setOnClickListener(v -> listener.onDelete(teacher));

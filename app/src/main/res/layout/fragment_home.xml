@@ -12,7 +12,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/purple_500"
-        android:paddingBottom="24dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -22,7 +21,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:layout_marginTop="24dp"
+            android:layout_marginTop="16dp"
             android:text="Welcome back,"
             android:textColor="@android:color/white"
             android:textSize="18sp"
@@ -34,10 +33,12 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
+            android:layout_marginBottom="16dp"
             android:text="Admin"
             android:textColor="@android:color/white"
             android:textSize="34sp"
             android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/ivProfileIconHeader"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
@@ -47,14 +48,13 @@
             android:id="@+id/ivProfileIconHeader"
             android:layout_width="60dp"
             android:layout_height="60dp"
-            android:layout_marginTop="24dp"
             android:layout_marginEnd="16dp"
-            android:src="@drawable/ic_launcher_foreground"
             android:background="@drawable/ic_launcher_background"
             android:contentDescription="User profile icon"
+            android:src="@drawable/ic_launcher_foreground"
+            app:layout_constraintBottom_toBottomOf="@id/tvUserName"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="@id/tvUserName"/>
+            app:layout_constraintTop_toTopOf="@+id/tvWelcome" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -113,7 +113,7 @@
         android:layout_marginStart="24dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="24dp"
-        android:layout_marginBottom="88dp"
+        android:layout_marginBottom="16dp"
         android:paddingTop="14dp"
         android:paddingBottom="14dp"
         android:text="ADD A CLASS"

@@ -8,7 +8,6 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
@@ -18,16 +17,16 @@ import com.example.yogaappadmin.R;
 import com.example.yogaappadmin.adapter.TeacherAdapter;
 import com.example.yogaappadmin.adapter.YogaTypeAdapter;
 import com.example.yogaappadmin.data.DatabaseHelper;
-import com.example.yogaappadmin.databinding.FragmentManageSettingsBinding;
+import com.example.yogaappadmin.databinding.FragmentManageEntitiesBinding;
 import com.example.yogaappadmin.model.TeacherModel;
 import com.example.yogaappadmin.model.YogaTypeModel;
 import com.google.android.material.button.MaterialButtonToggleGroup;
 
 import java.util.List;
 
-public class ManageSettingsFragment extends Fragment {
+public class ManageEntitiesFragment extends Fragment {
 
-    private FragmentManageSettingsBinding binding;
+    private FragmentManageEntitiesBinding binding;
     private DatabaseHelper dbHelper;
 
     private TeacherAdapter    teacherAdapter;
@@ -38,7 +37,7 @@ public class ManageSettingsFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container,
                              Bundle savedInstanceState) {
-        binding = FragmentManageSettingsBinding.inflate(inflater, container, false);
+        binding = FragmentManageEntitiesBinding.inflate(inflater, container, false);
         dbHelper = new DatabaseHelper(requireContext());
 
         setupAdapters();
@@ -58,8 +57,8 @@ public class ManageSettingsFragment extends Fragment {
                 args.putString("name",        teacher.getName());
                 args.putString("bio",         teacher.getBio());
                 args.putString("classesCsv",  teacher.getClassesCsv());
-                NavHostFragment.findNavController(ManageSettingsFragment.this)
-                        .navigate(R.id.action_manageSettings_to_teacherFormFragment, args);
+                NavHostFragment.findNavController(ManageEntitiesFragment.this)
+                        .navigate(R.id.action_manageEntities_to_teacherFormFragment, args);
             }
             @Override
             public void onDelete(@NonNull TeacherModel teacher) {
@@ -90,7 +89,7 @@ public class ManageSettingsFragment extends Fragment {
                 args.putLong  ("typeId",    type.getId());
                 args.putString("typeName",  type.getTypeName());
                 args.putString("description", type.getDescription());
-                NavHostFragment.findNavController(ManageSettingsFragment.this)
+                NavHostFragment.findNavController(ManageEntitiesFragment.this)
                         .navigate(R.id.action_manageSettings_to_yogaTypeFormFragment, args);
             }
             @Override
@@ -159,7 +158,7 @@ public class ManageSettingsFragment extends Fragment {
         binding.btnAdd.setOnClickListener(v -> {
             NavController nav = NavHostFragment.findNavController(this);
             if (showingTeachers) {
-                nav.navigate(R.id.action_manageSettings_to_teacherFormFragment);
+                nav.navigate(R.id.action_manageEntities_to_teacherFormFragment);
             } else {
                 nav.navigate(R.id.action_manageSettings_to_yogaTypeFormFragment);
             }

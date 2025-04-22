@@ -26,11 +26,11 @@
     <!--suppress NavigationFile -->
     <fragment
         android:id="@+id/navigation_manage_settings"
-        android:name="com.example.yogaappadmin.fragment.ManageSettingsFragment"
+        android:name="com.example.yogaappadmin.fragment.ManageEntitiesFragment"
         android:label="@string/title_notifications"
-        tools:layout="@layout/fragment_manage_settings">
+        tools:layout="@layout/fragment_manage_entities">
         <action
-            android:id="@+id/action_manageSettings_to_teacherFormFragment"
+            android:id="@+id/action_manageEntities_to_teacherFormFragment"
             app:destination="@id/teacherFormFragment" />
         <action
             android:id="@+id/action_manageSettings_to_yogaTypeFormFragment"

@@ -24,6 +24,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="Add / Edit Class Type"
+        android:textColor="@color/purple_500"
         android:textSize="20sp"
         android:textStyle="bold"
         android:gravity="center_vertical"

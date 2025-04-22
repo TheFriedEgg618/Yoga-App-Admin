@@ -45,8 +45,11 @@ public class YogaTypeAdapter extends RecyclerView.Adapter<YogaTypeAdapter.VH> {
     @Override
     public void onBindViewHolder(@NonNull VH holder, int position) {
         YogaTypeModel type = data.get(position);
+        String des = type.getDescription();
+        if (des.isBlank()) { des = "N/A"; }
+
         holder.tvName.setText(type.getTypeName());
-        holder.tvDescription.setText(type.getDescription());
+        holder.tvDescription.setText("Description: " + des);
 
         holder.btnEdit.setOnClickListener(v -> listener.onEdit(type));
         holder.btnDelete.setOnClickListener(v -> listener.onDelete(type));

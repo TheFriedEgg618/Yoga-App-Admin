@@ -37,7 +37,7 @@
         android:layout_marginTop="4dp"
         android:layout_marginBottom="16dp"
         android:ellipsize="end"
-        android:maxLines="2"
+        android:maxLines="3"
         android:text="A flowing sequence of poses linked with breath."
         android:textColor="@color/text_dark_grey"
         android:textSize="14sp"
