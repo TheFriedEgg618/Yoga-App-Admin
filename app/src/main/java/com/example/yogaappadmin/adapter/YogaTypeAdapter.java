@@ -3,6 +3,7 @@ package com.example.yogaappadmin.adapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -14,20 +15,23 @@ import com.example.yogaappadmin.model.YogaTypeModel;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * RecyclerView adapter for displaying a list of yoga class types.
- */
-public class YogaTypeAdapter
-        extends RecyclerView.Adapter<YogaTypeAdapter.VH> {
+public class YogaTypeAdapter extends RecyclerView.Adapter<YogaTypeAdapter.VH> {
+
+    public interface Listener {
+        void onEdit(@NonNull YogaTypeModel yogaType);
+        void onDelete(@NonNull YogaTypeModel yogaType);
+    }
 
     private final List<YogaTypeModel> data = new ArrayList<>();
+    private final Listener listener;
 
-    /**
-     * Swap in a new list of yoga types.
-     */
-    public void setData(List<YogaTypeModel> list) {
+    public YogaTypeAdapter(@NonNull Listener listener) {
+        this.listener = listener;
+    }
+
+    public void setData(@NonNull List<YogaTypeModel> list) {
         data.clear();
-        if (list != null) data.addAll(list);
+        data.addAll(list);
         notifyDataSetChanged();
     }
 
@@ -40,9 +44,12 @@ public class YogaTypeAdapter
 
     @Override
     public void onBindViewHolder(@NonNull VH holder, int position) {
-        YogaTypeModel item = data.get(position);
-        holder.tvName       .setText(item.getTypeName());
-        holder.tvDescription.setText(item.getDescription());
+        YogaTypeModel type = data.get(position);
+        holder.tvName.setText(type.getTypeName());
+        holder.tvDescription.setText(type.getDescription());
+
+        holder.btnEdit.setOnClickListener(v -> listener.onEdit(type));
+        holder.btnDelete.setOnClickListener(v -> listener.onDelete(type));
     }
 
     @Override
@@ -51,13 +58,15 @@ public class YogaTypeAdapter
     }
 
     static class VH extends RecyclerView.ViewHolder {
-        final TextView tvName;
-        final TextView tvDescription;
+        TextView tvName, tvDescription;
+        ImageButton btnEdit, btnDelete;
 
         VH(@NonNull View itemView) {
             super(itemView);
             tvName        = itemView.findViewById(R.id.tvYogaTypeName);
             tvDescription = itemView.findViewById(R.id.tvYogaTypeDescription);
+            btnEdit       = itemView.findViewById(R.id.btnEdit);
+            btnDelete     = itemView.findViewById(R.id.btnDelete);
         }
     }
 }

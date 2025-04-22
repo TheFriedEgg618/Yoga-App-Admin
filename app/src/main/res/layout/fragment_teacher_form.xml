@@ -37,10 +37,10 @@
     <ScrollView
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintTop_toBottomOf="@id/buttonBack"
-        app:layout_constraintBottom_toTopOf="@+id/btnDeleteTeacher"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:layout_constraintTop_toBottomOf="@id/buttonBack">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -52,73 +52,64 @@
                 style="@style/TextAppearance.AppCompat.Caption"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Name *"
+                android:layout_marginBottom="4dp"
                 android:labelFor="@+id/etTeacherName"
-                android:layout_marginBottom="4dp"/>
+                android:text="Name *" />
+
             <EditText
                 android:id="@+id/etTeacherName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
                 android:hint="Enter teacher name"
-                android:inputType="textPersonName"
-                android:layout_marginBottom="16dp"/>
+                android:inputType="textPersonName" />
 
             <!-- Bio -->
             <TextView
                 style="@style/TextAppearance.AppCompat.Caption"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Bio"
+                android:layout_marginBottom="4dp"
                 android:labelFor="@+id/etTeacherBio"
-                android:layout_marginBottom="4dp"/>
+                android:text="Bio" />
+
             <EditText
                 android:id="@+id/etTeacherBio"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:gravity="top"
                 android:hint="Short bio or description"
                 android:inputType="textMultiLine|textCapSentences"
-                android:gravity="top"
-                android:minLines="3"
-                android:layout_marginBottom="16dp"/>
+                android:minLines="3" />
 
             <!-- Classes they teach -->
             <TextView
                 style="@style/TextAppearance.AppCompat.Caption"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Classes They Teach *"
+                android:layout_marginBottom="4dp"
                 android:labelFor="@+id/etTeacherClasses"
-                android:layout_marginBottom="4dp"/>
+                android:text="Classes They Teach *" />
+
             <EditText
                 android:id="@+id/etTeacherClasses"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Select classes"
-                android:focusable="false"
+                android:layout_marginBottom="24dp"
                 android:clickable="true"
-                android:layout_marginBottom="24dp"/>
+                android:focusable="false"
+                android:hint="Select classes" />
 
             <!-- Save Button -->
             <Button
                 android:id="@+id/btnSaveTeacher"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Save Teacher"
-                android:layout_gravity="center_horizontal"/>
+                android:layout_gravity="center_horizontal"
+                android:text="Save Teacher" />
 
         </LinearLayout>
     </ScrollView>
-
-    <!-- Delete Button -->
-    <Button
-        android:id="@+id/btnDeleteTeacher"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:backgroundTint="#F23F3F"
-        android:text="Delete"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -201,7 +201,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public boolean insertTeacher(String name, String bio, String classesCsv) {
         SQLiteDatabase db = getWritableDatabase();
         ContentValues v = new ContentValues();
-        v.put(COLUMN_TEACHER_NAME, name);
+        v.put(COLUMN_TEACHER_NAME_T, name);
         v.put(COLUMN_TEACHER_BIO, bio);
         v.put(COLUMN_TEACHER_CLASSES, classesCsv);
         long id = db.insert(TABLE_TEACHERS, null, v);
@@ -212,7 +212,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public int updateTeacher(long id, String name, String bio, String classesCsv) {
         SQLiteDatabase db = getWritableDatabase();
         ContentValues v = new ContentValues();
-        v.put(COLUMN_TEACHER_NAME, name);
+        v.put(COLUMN_TEACHER_NAME_T, name);
         v.put(COLUMN_TEACHER_BIO, bio);
         v.put(COLUMN_TEACHER_CLASSES, classesCsv);
         int rows = db.update(

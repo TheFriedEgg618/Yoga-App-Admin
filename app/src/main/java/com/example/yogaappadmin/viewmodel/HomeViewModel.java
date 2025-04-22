@@ -14,7 +14,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class HomeViewModel extends AndroidViewModel {
-    private final DatabaseHelper db;
+    private final DatabaseHelper dbHelper;
     private final MutableLiveData<List<ClassModel>> classes = new MutableLiveData<>();
 
     // Map day abbreviations to Calendar.DAY_OF_WEEK
@@ -33,7 +33,7 @@ public class HomeViewModel extends AndroidViewModel {
 
     public HomeViewModel(@NonNull Application app) {
         super(app);
-        db = new DatabaseHelper(app);
+        dbHelper = new DatabaseHelper(app);
         loadUpcomingThisWeek();
     }
 
@@ -43,7 +43,7 @@ public class HomeViewModel extends AndroidViewModel {
     }
 
     private void loadUpcomingThisWeek() {
-        List<ClassModel> all = db.getAllClassesList();
+        List<ClassModel> all = dbHelper.getAllClassesList();
         List<ClassModel> upcoming = new ArrayList<>();
 
         Calendar now = Calendar.getInstance();
@@ -88,8 +88,8 @@ public class HomeViewModel extends AndroidViewModel {
         Collections.sort(upcoming, (a, b) -> {
             // compare first upcoming day in each CSV
             int da = firstDowIndex(a.getDay());
-            int db = firstDowIndex(b.getDay());
-            if (da != db) return da - db;
+            int dbHelper = firstDowIndex(b.getDay());
+            if (da != dbHelper) return da - dbHelper;
             // then compare times
             try {
                 Date ta = timeFmt.parse(a.getTime());

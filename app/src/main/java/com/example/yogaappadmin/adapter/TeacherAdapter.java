@@ -3,6 +3,7 @@ package com.example.yogaappadmin.adapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -14,15 +15,23 @@ import com.example.yogaappadmin.model.TeacherModel;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TeacherAdapter
-        extends RecyclerView.Adapter<TeacherAdapter.VH> {
+public class TeacherAdapter extends RecyclerView.Adapter<TeacherAdapter.VH> {
+
+    public interface Listener {
+        void onEdit(@NonNull TeacherModel teacher);
+        void onDelete(@NonNull TeacherModel teacher);
+    }
 
     private final List<TeacherModel> data = new ArrayList<>();
+    private final Listener listener;
 
-    /** Swap in a new list of teachers */
-    public void setData(List<TeacherModel> list) {
+    public TeacherAdapter(@NonNull Listener listener) {
+        this.listener = listener;
+    }
+
+    public void setData(@NonNull List<TeacherModel> list) {
         data.clear();
-        if (list != null) data.addAll(list);
+        data.addAll(list);
         notifyDataSetChanged();
     }
 
@@ -34,24 +43,32 @@ public class TeacherAdapter
     }
 
     @Override
-    public void onBindViewHolder(@NonNull VH h, int pos) {
-        TeacherModel t = data.get(pos);
-        h.tvName   .setText(t.getName());
-        h.tvBio    .setText(t.getBio());
-        h.tvClasses.setText("Teaches: " + t.getClassesCsv());
+    public void onBindViewHolder(@NonNull VH holder, int position) {
+        TeacherModel teacher = data.get(position);
+        holder.tvName.setText(teacher.getName());
+        holder.tvBio.setText(teacher.getBio());
+        holder.tvClasses.setText("Teaches: " + teacher.getClassesCsv());
+
+        holder.btnEdit.setOnClickListener(v -> listener.onEdit(teacher));
+        holder.btnDelete.setOnClickListener(v -> listener.onDelete(teacher));
     }
 
-    @Override public int getItemCount() {
+    @Override
+    public int getItemCount() {
         return data.size();
     }
 
     static class VH extends RecyclerView.ViewHolder {
-        final TextView tvName, tvBio, tvClasses;
+        TextView tvName, tvBio, tvClasses;
+        ImageButton btnEdit, btnDelete;
+
         VH(@NonNull View itemView) {
             super(itemView);
             tvName    = itemView.findViewById(R.id.tvTeacherName);
             tvBio     = itemView.findViewById(R.id.tvTeacherBio);
             tvClasses = itemView.findViewById(R.id.tvTeacherClasses);
+            btnEdit   = itemView.findViewById(R.id.btnEdit);
+            btnDelete = itemView.findViewById(R.id.btnDelete);
         }
     }
 }
