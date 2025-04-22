@@ -56,16 +56,16 @@ android:elevation="4dp">
         android:textSize="14sp"/>
 
     <TextView
-        android:id="@+id/tvClassInstructor"
+        android:id="@+id/tvClassCapacity"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="2dp"
-        tools:text="Instructor name"
+        tools:text="Capacity: ..."
         android:textColor="@color/text_dark_grey"
         android:textSize="12sp"/>
 
     <TextView
-        android:id="@+id/tvClassLocation"
+        android:id="@+id/tvClassPrice"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="2dp"

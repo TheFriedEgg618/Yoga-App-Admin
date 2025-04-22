@@ -17,6 +17,7 @@ import androidx.navigation.NavController; // Import NavController
 import androidx.navigation.fragment.NavHostFragment; // Import NavHostFragment
 
 import com.example.yogaappadmin.R; // Make sure R is imported
+import com.example.yogaappadmin.adapter.ClassAdapter;
 import com.example.yogaappadmin.databinding.FragmentHomeBinding;
 import com.example.yogaappadmin.viewmodel.HomeViewModel;
 
@@ -35,6 +36,15 @@ public class HomeFragment extends Fragment {
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
+        ClassAdapter adapter = new ClassAdapter();
+        binding.recyclerViewClasses.setAdapter(adapter);
+
+        // Observe the LiveData and submit to adapter:
+        homeViewModel.getClasses().observe(getViewLifecycleOwner(), list -> {
+            adapter.setData(list);
+            // optionally update the “Upcoming count” label:
+            binding.tvUpcomingTitleCount.setText(String.valueOf(list.size()));
+        });
         return root;
     }
 

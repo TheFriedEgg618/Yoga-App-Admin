@@ -1,147 +1,193 @@
 package com.example.yogaappadmin.fragment;
 
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProvider;
-
+import android.app.TimePickerDialog;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.navigation.NavController; // Import NavController
-import androidx.navigation.fragment.NavHostFragment; // Import NavHostFragment
-
+import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.Button; // Keep Button if still needed
-import android.widget.EditText; // Keep EditText if still needed
-import android.widget.ImageButton; // Import ImageButton
-import android.widget.Spinner; // Keep Spinner if still needed
+import android.widget.Button;
 import android.widget.Toast;
-
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavController;
+import androidx.navigation.fragment.NavHostFragment;
 import com.example.yogaappadmin.R;
-// Import ViewBinding class
 import com.example.yogaappadmin.databinding.FragmentAddClassBinding;
+import com.example.yogaappadmin.data.DatabaseHelper;
 import com.example.yogaappadmin.viewmodel.AddClassViewModel;
-
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.List;
 
 public class AddClassFragment extends Fragment {
 
     private AddClassViewModel mViewModel;
-    // Declare binding variable
     private FragmentAddClassBinding binding;
+    private DatabaseHelper dbHelper;
 
-    // Remove individual view variables if using binding
-    // private Spinner spinnerDayOfWeek;
-    // ... other views ...
-    // private ImageButton buttonBack; // Not needed if using binding
+    // Hold pending values after validation
+    private String pendingDay, pendingTime, pendingCapacityStr,
+            pendingDurationStr, pendingPriceStr,
+            pendingType, pendingDescription;
 
     public static AddClassFragment newInstance() {
         return new AddClassFragment();
     }
 
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater,
+                             @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        // Inflate the layout using View Binding
         binding = FragmentAddClassBinding.inflate(inflater, container, false);
-        return binding.getRoot(); // Return the root from binding
+        return binding.getRoot();
     }
 
     @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull View view,
+                              @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // Initialize ViewModel
-        mViewModel = new ViewModelProvider(this).get(AddClassViewModel.class);
+        mViewModel = new ViewModelProvider(this)
+                .get(AddClassViewModel.class);
 
-        // No need for findViews() if using binding
+        dbHelper = new DatabaseHelper(requireContext());
 
-        // Setup Spinners (using binding)
         setupSpinners();
-
-        // Setup Listeners (using binding)
         setupListeners();
-
-        // Observe ViewModel LiveData (using binding)
         observeViewModel();
     }
 
-    // Removed findViews() method as binding handles it.
-
     private void setupSpinners() {
-        // Access views via binding object
-        // --- Example Spinner Setup ---
-        List<String> days = Arrays.asList("Select Day", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday");
-        ArrayAdapter<String> dayAdapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_item, days);
+        List<String> days = Arrays.asList(
+                "Select Day", "Monday", "Tuesday", "Wednesday",
+                "Thursday", "Friday", "Saturday", "Sunday"
+        );
+        ArrayAdapter<String> dayAdapter = new ArrayAdapter<>(
+                requireContext(),
+                android.R.layout.simple_spinner_item,
+                days
+        );
         dayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        binding.spinnerDayOfWeek.setAdapter(dayAdapter); // Use binding.spinnerDayOfWeek
+        binding.spinnerDayOfWeek.setAdapter(dayAdapter);
 
-        List<String> types = Arrays.asList("Select Type", "Flow Yoga", "Aerial Yoga", "Family Yoga");
-        ArrayAdapter<String> typeAdapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_item, types);
+        List<String> types = Arrays.asList(
+                "Select Type", "Flow Yoga", "Aerial Yoga", "Family Yoga"
+        );
+        ArrayAdapter<String> typeAdapter = new ArrayAdapter<>(
+                requireContext(),
+                android.R.layout.simple_spinner_item,
+                types
+        );
         typeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        binding.spinnerClassType.setAdapter(typeAdapter); // Use binding.spinnerClassType
-        // --- End Example Spinner Setup ---
+        binding.spinnerClassType.setAdapter(typeAdapter);
     }
 
-
     private void setupListeners() {
-        // Back Button Listener
+        // Time field → TimePickerDialog
+        binding.editTextTime.setInputType(InputType.TYPE_NULL);
+        binding.editTextTime.setOnClickListener(v -> showTimePicker());
+        binding.editTextTime.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus) {
+                showTimePicker();
+                v.clearFocus();
+            }
+        });
+
+        // Back navigation
         binding.buttonBack.setOnClickListener(v -> {
-            // Use NavController to navigate Up or Pop BackStack
-            NavController navController = NavHostFragment.findNavController(AddClassFragment.this);
-            navController.navigateUp(); // Preferred way to go back respecting navigation hierarchy
-            // Alternative: navController.popBackStack(); // Simply goes back one step
+            NavController navController = NavHostFragment.findNavController(this);
+            navController.navigateUp();
         });
 
-        // Save Button Listener
+        // Save button listener
         binding.buttonSaveCourse.setOnClickListener(v -> {
-            // Gather input from UI elements using binding
-            String day = binding.spinnerDayOfWeek.getSelectedItem() != null ? binding.spinnerDayOfWeek.getSelectedItem().toString() : "";
-            String time = binding.editTextTime.getText().toString().trim();
-            String capacityStr = binding.editTextCapacity.getText().toString().trim();
-            String durationStr = binding.editTextDuration.getText().toString().trim();
-            String priceStr = binding.editTextPrice.getText().toString().trim();
-            String type = binding.spinnerClassType.getSelectedItem() != null ? binding.spinnerClassType.getSelectedItem().toString() : "";
-            String description = binding.editTextDescription.getText().toString().trim();
+            // Gather inputs
+            pendingDay         = binding.spinnerDayOfWeek.getSelectedItem().toString();
+            pendingTime        = binding.editTextTime.getText().toString().trim();
+            pendingCapacityStr = binding.editTextCapacity.getText().toString().trim();
+            pendingDurationStr = binding.editTextDuration.getText().toString().trim();
+            pendingPriceStr    = binding.editTextPrice.getText().toString().trim();
+            pendingType        = binding.spinnerClassType.getSelectedItem().toString();
+            pendingDescription = binding.editTextDescription.getText().toString().trim();
 
-            // Call ViewModel to validate and process
-            mViewModel.validateAndSave(day, time, capacityStr, durationStr, priceStr, type, description);
+            // Validate via ViewModel
+            mViewModel.validateAndSave(
+                    pendingDay,
+                    pendingTime,
+                    pendingCapacityStr,
+                    pendingDurationStr,
+                    pendingPriceStr,
+                    pendingType,
+                    pendingDescription
+            );
         });
+    }
+
+    private void showTimePicker() {
+        Calendar now = Calendar.getInstance();
+        int hour   = now.get(Calendar.HOUR_OF_DAY);
+        int minute = now.get(Calendar.MINUTE);
+
+        new TimePickerDialog(
+                requireContext(),
+                (dialog, selHour, selMin) ->
+                        binding.editTextTime.setText(
+                                String.format("%02d:%02d", selHour, selMin)
+                        ),
+                hour, minute,
+                true // 24h mode; false for AM/PM
+        ).show();
     }
 
     private void observeViewModel() {
-        // Observe Error LiveData using binding
-        mViewModel.getTimeError().observe(getViewLifecycleOwner(), error -> binding.editTextTime.setError(error));
-        mViewModel.getCapacityError().observe(getViewLifecycleOwner(), error -> binding.editTextCapacity.setError(error));
-        mViewModel.getDurationError().observe(getViewLifecycleOwner(), error -> binding.editTextDuration.setError(error));
-        mViewModel.getPriceError().observe(getViewLifecycleOwner(), error -> binding.editTextPrice.setError(error));
-
-        // Observe Spinner Errors (showing Toast as example)
-        mViewModel.getDayError().observe(getViewLifecycleOwner(), error -> {
-            if (error != null) {
-                Toast.makeText(getContext(), error, Toast.LENGTH_SHORT).show();
-            }
-        });
-        mViewModel.getTypeError().observe(getViewLifecycleOwner(), error -> {
-            if (error != null) {
-                Toast.makeText(getContext(), error, Toast.LENGTH_SHORT).show();
-            }
+        mViewModel.getDayError().observe(getViewLifecycleOwner(), err -> {
+            if (err != null) Toast.makeText(getContext(), err, Toast.LENGTH_SHORT).show();
         });
 
-        // Observe Save Result
+        mViewModel.getTimeError()
+                .observe(getViewLifecycleOwner(), binding.editTextTime::setError);
+        mViewModel.getCapacityError()
+                .observe(getViewLifecycleOwner(), binding.editTextCapacity::setError);
+        mViewModel.getDurationError()
+                .observe(getViewLifecycleOwner(), binding.editTextDuration::setError);
+        mViewModel.getPriceError()
+                .observe(getViewLifecycleOwner(), binding.editTextPrice::setError);
+        mViewModel.getTypeError().observe(getViewLifecycleOwner(), err -> {
+            if (err != null) Toast.makeText(getContext(), err, Toast.LENGTH_SHORT).show();
+        });
+
         mViewModel.getSaveResultSuccess().observe(getViewLifecycleOwner(), success -> {
             if (success != null) {
                 if (success) {
-                    Toast.makeText(getContext(), "Class Saved Successfully!", Toast.LENGTH_SHORT).show();
-                    NavController navController = NavHostFragment.findNavController(AddClassFragment.this);
-                    navController.navigateUp(); // Go back after successful save
+                    // Insert into SQLite
+                    boolean inserted = dbHelper.insertClass(
+                            pendingDay,
+                            pendingTime,
+                            Integer.parseInt(pendingCapacityStr),
+                            Integer.parseInt(pendingDurationStr),
+                            Double.parseDouble(pendingPriceStr),
+                            pendingType,
+                            pendingDescription
+                    );
+                    if (inserted) {
+                        Toast.makeText(getContext(),
+                                        "Class Saved Successfully!", Toast.LENGTH_SHORT)
+                                .show();
+                        NavHostFragment.findNavController(this)
+                                .navigateUp();
+                    } else {
+                        Toast.makeText(getContext(),
+                                        "Error saving to database.", Toast.LENGTH_SHORT)
+                                .show();
+                    }
                 } else {
-                    Toast.makeText(getContext(), "Please correct the errors.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(),
+                                    "Please correct the errors.", Toast.LENGTH_SHORT)
+                            .show();
                 }
                 mViewModel.resetSaveStatus();
             }
@@ -151,7 +197,6 @@ public class AddClassFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        // Nullify the binding object
         binding = null;
     }
 }
