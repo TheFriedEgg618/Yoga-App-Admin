@@ -1,99 +1,114 @@
 package com.example.yogaappadmin.fragment;
 
+import android.app.AlertDialog;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView; // Keep if you use ViewModel text later
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-// REMOVE FragmentManager and FragmentTransaction imports if they exist
-// import androidx.fragment.app.FragmentManager;
-// import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.navigation.NavController; // Import NavController
-import androidx.navigation.fragment.NavHostFragment; // Import NavHostFragment
+import androidx.navigation.NavController;
+import androidx.navigation.fragment.NavHostFragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
 
-import com.example.yogaappadmin.R; // Make sure R is imported
+import com.example.yogaappadmin.R;
 import com.example.yogaappadmin.adapter.ClassAdapter;
+import com.example.yogaappadmin.data.DatabaseHelper;
 import com.example.yogaappadmin.databinding.FragmentHomeBinding;
+import com.example.yogaappadmin.model.ClassModel;
 import com.example.yogaappadmin.viewmodel.HomeViewModel;
 
 public class HomeFragment extends Fragment {
 
-    private FragmentHomeBinding binding; // View Binding instance
-    private HomeViewModel homeViewModel; // ViewModel instance
+    private FragmentHomeBinding binding;
+    private HomeViewModel homeViewModel;
+    private DatabaseHelper dbHelper;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
-                             ViewGroup container, Bundle savedInstanceState) {
-        // Initialize ViewModel
+                             ViewGroup container,
+                             Bundle savedInstanceState) {
         homeViewModel = new ViewModelProvider(this).get(HomeViewModel.class);
-
-        // Inflate the layout using View Binding
         binding = FragmentHomeBinding.inflate(inflater, container, false);
-        View root = binding.getRoot();
+        dbHelper = new DatabaseHelper(requireContext());
 
-        ClassAdapter adapter = new ClassAdapter();
+        binding.recyclerViewClasses.setLayoutManager(
+                new LinearLayoutManager(requireContext())
+        );
+        ClassAdapter adapter = new ClassAdapter(new ClassAdapter.Listener() {
+            @Override
+            public void onEdit(ClassModel item) {
+                // Build the bundle with all 8 args
+                Bundle args = new Bundle();
+                args.putLong("classId",      item.getId());
+                args.putString("title",    item.getTitle());
+                args.putString("dayCsv",     item.getDay());
+                args.putString("time",       item.getTime());
+                args.putInt("capacity",      item.getCapacity());
+                args.putInt("duration",      item.getDuration());
+                args.putFloat("price",       (float)item.getPrice());
+                args.putString("teacher",  item.getTeacherName());
+                args.putString("type",       item.getType());
+                args.putString("description",item.getDescription());
+
+                NavController nav = NavHostFragment.findNavController(HomeFragment.this);
+                nav.navigate(R.id.action_navigation_home_to_ClassFormFragment, args);
+            }
+
+            @Override
+            public void onDelete(ClassModel item) {
+                new AlertDialog.Builder(requireContext())
+                        .setTitle("Delete Class")
+                        .setMessage("Are you sure you want to delete this class?")
+                        .setPositiveButton("Delete", (dlg, which) -> {
+                            int rows = dbHelper.deleteClass(item.getId());
+                            if (rows > 0) {
+                                Toast.makeText(getContext(),
+                                        "Class deleted", Toast.LENGTH_SHORT).show();
+                                homeViewModel.refresh();
+                            } else {
+                                Toast.makeText(getContext(),
+                                        "Error deleting class", Toast.LENGTH_SHORT).show();
+                            }
+                        })
+                        .setNegativeButton("Cancel", null)
+                        .show();
+            }
+        });
         binding.recyclerViewClasses.setAdapter(adapter);
 
-        // Observe the LiveData and submit to adapter:
         homeViewModel.getClasses().observe(getViewLifecycleOwner(), list -> {
             adapter.setData(list);
-            // optionally update the “Upcoming count” label:
             binding.tvUpcomingTitleCount.setText(String.valueOf(list.size()));
         });
-        return root;
+
+        return binding.getRoot();
     }
 
     @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull View view,
+                              @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-        // Setup the click listener for the Add Class button
-        setupAddButtonListener();
-    }
-
-    private void setupAddButtonListener() {
-        // Access the button via the binding object
-        binding.btnAddClass.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Find the NavController associated with this Fragment
-                // Requires the Fragment to be hosted within a NavHostFragment
-                NavController navController = NavHostFragment.findNavController(HomeFragment.this);
-
-                // Navigate using the action ID defined in the navigation graph
-                // IMPORTANT: Replace 'R.id.action_navigation_home_to_addClassFragment'
-                // with the actual ID of the <action> you defined in your nav graph XML.
-                navController.navigate(R.id.action_navigation_home_to_addClassFragment); // <<<--- REPLACE THIS ACTION ID
-
-                // --- Remove the old manual transaction code ---
-                /*
-                AddClassFragment addClassFragment = AddClassFragment.newInstance();
-                FragmentManager fragmentManager = getParentFragmentManager();
-                FragmentTransaction transaction = fragmentManager.beginTransaction();
-                transaction.replace(R.id.nav_host_fragment_container, addClassFragment); // <<<--- OLD CODE
-                transaction.addToBackStack("HomeToAddClass"); // <<<--- OLD CODE
-                transaction.commit(); // <<<--- OLD CODE
-                */
-            }
+        binding.btnAddClass.setOnClickListener(v -> {
+            NavController nav = NavHostFragment.findNavController(this);
+            // no bundle → defaults kick in → add‑mode
+            nav.navigate(R.id.action_navigation_home_to_ClassFormFragment);
         });
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        // Force reload of data whenever this fragment resumes
         homeViewModel.refresh();
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        // Release the binding instance when the view is destroyed to prevent memory leaks
         binding = null;
     }
 }

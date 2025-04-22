@@ -41,10 +41,8 @@ public class YogaTypeFormFragment extends Fragment {
             typeId = getArguments().getLong("typeId");
             binding.etYogaTypeName.setText(getArguments().getString("typeName"));
             binding.etYogaTypeDescription.setText(getArguments().getString("typeDescription"));
-            binding.btnDeleteType.setVisibility(View.VISIBLE);
         } else {
             typeId = null;
-            binding.btnDeleteType.setVisibility(View.GONE);
         }
 
         // Back arrow
@@ -77,21 +75,6 @@ public class YogaTypeFormFragment extends Fragment {
             } else {
                 Toast.makeText(getContext(),
                         "Error saving class type", Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        // Delete
-        binding.btnDeleteType.setOnClickListener(v -> {
-            if (typeId != null) {
-                int rows = dbHelper.deleteYogaType(typeId);
-                if (rows > 0) {
-                    Toast.makeText(getContext(),
-                            "Class type deleted", Toast.LENGTH_SHORT).show();
-                    NavHostFragment.findNavController(this).navigateUp();
-                } else {
-                    Toast.makeText(getContext(),
-                            "Error deleting class type", Toast.LENGTH_SHORT).show();
-                }
             }
         });
     }

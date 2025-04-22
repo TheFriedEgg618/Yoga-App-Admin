@@ -46,7 +46,7 @@ public class TeacherFormFragment extends Fragment {
         // 1) Load all yoga‑type names from DB
         List<YogaTypeModel> types = dbHelper.getAllYogaTypesModels();
         for (YogaTypeModel t : types) {
-            allClassNames.add(t.getName());
+            allClassNames.add(t.getTypeName());
         }
         checkedClasses = new boolean[allClassNames.size()];
 
@@ -64,10 +64,8 @@ public class TeacherFormFragment extends Fragment {
                 }
                 binding.etTeacherClasses.setText(csv);
             }
-            binding.btnDeleteTeacher.setVisibility(View.VISIBLE);
         } else {
             teacherId = null;
-            binding.btnDeleteTeacher.setVisibility(View.GONE);
         }
 
         // 3) Show multi‑select dialog on click
@@ -129,26 +127,6 @@ public class TeacherFormFragment extends Fragment {
                 Toast.makeText(getContext(),
                         "Error saving teacher", Toast.LENGTH_SHORT).show();
             }
-        });
-
-        // DELETE
-        binding.btnDeleteTeacher.setOnClickListener(v -> {
-            new AlertDialog.Builder(requireContext())
-                    .setTitle("Delete Teacher")
-                    .setMessage("Are you sure you want to delete this teacher?")
-                    .setPositiveButton("Delete", (dialog, w) -> {
-                        int rows = dbHelper.deleteTeacher(teacherId);
-                        if (rows > 0) {
-                            Toast.makeText(getContext(),
-                                    "Teacher deleted", Toast.LENGTH_SHORT).show();
-                            NavHostFragment.findNavController(this).navigateUp();
-                        } else {
-                            Toast.makeText(getContext(),
-                                    "Error deleting teacher", Toast.LENGTH_SHORT).show();
-                        }
-                    })
-                    .setNegativeButton("Cancel", null)
-                    .show();
         });
     }
 

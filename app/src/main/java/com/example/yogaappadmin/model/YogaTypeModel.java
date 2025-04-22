@@ -1,24 +1,24 @@
+// app/src/main/java/com/example/yogaappadmin/model/YogaTypeModel.java
 package com.example.yogaappadmin.model;
 
-/**
- * Simple model representing a yoga class type.
- */
 public class YogaTypeModel {
-    private final String name;
-    private final String description;
+    private long id;
+    private String typeName;
+    private String description;
 
-    public YogaTypeModel(String name, String description) {
-        this.name        = name;
+    /**
+     * @param id           database primary key
+     * @param typeName     the name of the yoga class type (e.g. "Flow Yoga")
+     * @param description  optional description of this class type
+     */
+    public YogaTypeModel(long id, String typeName, String description) {
+        this.id          = id;
+        this.typeName    = typeName;
         this.description = description;
     }
 
-    /** Friendly display name of the yoga class type (e.g. "Flow Yoga") */
-    public String getName() {
-        return name;
-    }
-
-    /** Short description of what this class involves */
-    public String getDescription() {
-        return description;
-    }
+    // --- Getters ---
+    public long   getId()          { return id; }
+    public String getTypeName()    { return typeName; }
+    public String getDescription() { return description; }
 }

@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:tools="http://schemas.android.com/tools"
     android:padding="16dp"
-    tools:context=".fragment.AddClassFragment">
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".fragment.ClassFormFragment">
 
-    <!-- Back arrow + Title -->
+    <!-- Back arrow + Header -->
     <ImageButton
         android:id="@+id/buttonBack"
         android:layout_width="48dp"
@@ -23,15 +24,15 @@
         android:id="@+id/tvAddClassTitle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Add New Class"
+        android:layout_marginStart="8dp"
+        android:text="Add / Edit Class"
         android:textSize="20sp"
         android:textStyle="bold"
         android:gravity="center_vertical"
         app:layout_constraintStart_toEndOf="@id/buttonBack"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@id/buttonBack"
-        app:layout_constraintBottom_toBottomOf="@id/buttonBack"
-        android:layout_marginStart="8dp"/>
+        app:layout_constraintBottom_toBottomOf="@id/buttonBack"/>
 
     <!-- Form -->
     <ScrollView
@@ -55,12 +56,27 @@
                 android:text="Day(s) of Week *"
                 android:labelFor="@id/toggleGroupDays"
                 android:layout_marginBottom="4dp"/>
-
             <include
                 android:id="@+id/toggleGroupDays"
                 layout="@layout/view_days_of_week"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"/>
+
+            <!-- Title Field -->
+            <TextView
+                style="@style/TextAppearance.AppCompat.Caption"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Title *"
+                android:labelFor="@+id/editTextTitle"
+                android:layout_marginBottom="4dp"/>
+            <EditText
+                android:id="@+id/editTextTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Enter class title"
+                android:inputType="textCapWords"
                 android:layout_marginBottom="16dp"/>
 
             <!-- Time & Capacity -->
@@ -84,7 +100,6 @@
                         android:layout_height="wrap_content"
                         android:text="Time *"
                         android:labelFor="@+id/editTextTime"/>
-
                     <EditText
                         android:id="@+id/editTextTime"
                         android:layout_width="match_parent"
@@ -110,7 +125,6 @@
                         android:layout_height="wrap_content"
                         android:text="Capacity *"
                         android:labelFor="@+id/editTextCapacity"/>
-
                     <EditText
                         android:id="@+id/editTextCapacity"
                         android:layout_width="match_parent"
@@ -142,7 +156,6 @@
                         android:layout_height="wrap_content"
                         android:text="Duration (min) *"
                         android:labelFor="@+id/editTextDuration"/>
-
                     <EditText
                         android:id="@+id/editTextDuration"
                         android:layout_width="match_parent"
@@ -166,7 +179,6 @@
                         android:layout_height="wrap_content"
                         android:text="Price (£) *"
                         android:labelFor="@+id/editTextPrice"/>
-
                     <EditText
                         android:id="@+id/editTextPrice"
                         android:layout_width="match_parent"
@@ -177,18 +189,55 @@
                 </LinearLayout>
             </LinearLayout>
 
-            <!-- Class Type -->
-            <TextView
-                style="@style/TextAppearance.AppCompat.Caption"
+            <!-- Teacher & Class Type -->
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Type of Class *"
-                android:labelFor="@+id/spinnerClassType"/>
-            <Spinner
-                android:id="@+id/spinnerClassType"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"/>
+                android:orientation="horizontal"
+                android:weightSum="2"
+                android:layout_marginBottom="16dp">
+
+                <!-- Select Teacher -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        style="@style/TextAppearance.AppCompat.Caption"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Teacher *"
+                        android:labelFor="@+id/spinnerTeacher"/>
+
+                    <Spinner
+                        android:id="@+id/spinnerTeacher"
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp" />
+                </LinearLayout>
+
+                <!-- Type of Class -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginStart="16dp">
+
+                    <TextView
+                        style="@style/TextAppearance.AppCompat.Caption"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Type of Class *"
+                        android:labelFor="@+id/spinnerClassType"/>
+
+                    <Spinner
+                        android:id="@+id/spinnerClassType"
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp" />
+                </LinearLayout>
+            </LinearLayout>
 
             <!-- Description -->
             <TextView
@@ -215,7 +264,6 @@
                 android:layout_height="wrap_content"
                 android:text="Save Course"
                 android:layout_gravity="center_horizontal"/>
-
         </LinearLayout>
     </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -41,7 +41,7 @@ public class YogaTypeAdapter
     @Override
     public void onBindViewHolder(@NonNull VH holder, int position) {
         YogaTypeModel item = data.get(position);
-        holder.tvName       .setText(item.getName());
+        holder.tvName       .setText(item.getTypeName());
         holder.tvDescription.setText(item.getDescription());
     }
 
