@@ -17,9 +17,8 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 
-import com.example.yogaappadmin.R;
 import com.example.yogaappadmin.data.DatabaseHelper;
-import com.example.yogaappadmin.databinding.FragmentAddClassBinding;
+import com.example.yogaappadmin.databinding.FragmentClassFormBinding;
 import com.example.yogaappadmin.viewmodel.AddClassViewModel;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.button.MaterialButtonToggleGroup;
@@ -31,7 +30,7 @@ import java.util.List;
 
 public class AddClassFragment extends Fragment {
 
-    private FragmentAddClassBinding binding;
+    private FragmentClassFormBinding binding;
     private AddClassViewModel mViewModel;
     private DatabaseHelper dbHelper;
 
@@ -51,7 +50,7 @@ public class AddClassFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        binding = FragmentAddClassBinding.inflate(inflater, container, false);
+        binding = FragmentClassFormBinding.inflate(inflater, container, false);
         return binding.getRoot();
     }
 

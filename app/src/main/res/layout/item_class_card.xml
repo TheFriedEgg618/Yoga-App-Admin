@@ -12,29 +12,15 @@
     android:padding="16dp"
     android:elevation="4dp">
 
-    <!-- Class Icon -->
-    <ImageView
-        android:id="@+id/ivClassIcon"
-        android:layout_width="56dp"
-        android:layout_height="56dp"
-        android:scaleType="centerCrop"
-        android:background="@drawable/ic_launcher_background"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        tools:srcCompat="@drawable/ic_launcher_foreground"
-        android:contentDescription="Class icon" />
-
     <!-- Details Container -->
     <LinearLayout
         android:id="@+id/layoutClassDetails"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/ivClassIcon"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
         <!-- Class Type & Duration -->
@@ -45,7 +31,7 @@
             android:ellipsize="end"
             android:maxLines="1"
             android:text="Yoga - 60 MINS"
-            android:textColor="@color/header_blue"
+            android:textColor="@color/purple_500"
             android:textSize="16sp"
             android:textStyle="bold" />
 

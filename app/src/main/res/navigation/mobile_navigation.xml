@@ -22,10 +22,17 @@
         tools:layout="@layout/fragment_dashboard" />
 
     <fragment
-        android:id="@+id/navigation_notifications"
-        android:name="com.example.yogaappadmin.fragment.NotificationsFragment"
+        android:id="@+id/navigation_manage_settings"
+        android:name="com.example.yogaappadmin.fragment.ManageSettingsFragment"
         android:label="@string/title_notifications"
-        tools:layout="@layout/fragment_notifications" />
+        tools:layout="@layout/fragment_manage_settings">
+        <action
+            android:id="@+id/action_manageSettings_to_teacherFormFragment"
+            app:destination="@id/teacherFormFragment" />
+        <action
+            android:id="@+id/action_manageSettings_to_yogaTypeFormFragment"
+            app:destination="@id/yogaTypeFormFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/navigation_profile"
@@ -37,6 +44,18 @@
         android:id="@+id/navigation_add_class"
         android:name="com.example.yogaappadmin.fragment.AddClassFragment"
         android:label="Add New Class"
-        tools:layout="@layout/fragment_add_class" />
+        tools:layout="@layout/fragment_class_form" />
+
+    <!-- Teacher form -->
+    <fragment
+        android:id="@+id/teacherFormFragment"
+        android:name="com.example.yogaappadmin.fragment.TeacherFormFragment"
+        android:label="Add / Edit Teacher" />
+
+    <!-- Yoga-type form -->
+    <fragment
+        android:id="@+id/yogaTypeFormFragment"
+        android:name="com.example.yogaappadmin.fragment.YogaTypeFormFragment"
+        android:label="Add / Edit Class Type" />
 
 </navigation>

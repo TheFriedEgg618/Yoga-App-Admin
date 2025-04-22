@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:padding="16dp"
+    tools:context=".fragment.TeacherFormFragment">
+
+    <!-- Back arrow + Title -->
+    <ImageButton
+        android:id="@+id/buttonBack"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:src="@drawable/ic_arrow_back_black_24dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="Back"
+        app:tint="?android:attr/textColorPrimary"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <TextView
+        android:id="@+id/tvTeacherFormTitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Add / Edit Teacher"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:gravity="center_vertical"
+        android:layout_marginStart="8dp"
+        app:layout_constraintStart_toEndOf="@id/buttonBack"
+        app:layout_constraintTop_toTopOf="@id/buttonBack"
+        app:layout_constraintBottom_toBottomOf="@id/buttonBack"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <!-- Form -->
+    <ScrollView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toBottomOf="@id/buttonBack"
+        app:layout_constraintBottom_toTopOf="@+id/btnDeleteTeacher"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- Name -->
+            <TextView
+                style="@style/TextAppearance.AppCompat.Caption"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Name *"
+                android:labelFor="@+id/etTeacherName"
+                android:layout_marginBottom="4dp"/>
+            <EditText
+                android:id="@+id/etTeacherName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Enter teacher name"
+                android:inputType="textPersonName"
+                android:layout_marginBottom="16dp"/>
+
+            <!-- Bio -->
+            <TextView
+                style="@style/TextAppearance.AppCompat.Caption"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Bio"
+                android:labelFor="@+id/etTeacherBio"
+                android:layout_marginBottom="4dp"/>
+            <EditText
+                android:id="@+id/etTeacherBio"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Short bio or description"
+                android:inputType="textMultiLine|textCapSentences"
+                android:gravity="top"
+                android:minLines="3"
+                android:layout_marginBottom="16dp"/>
+
+            <!-- Classes they teach -->
+            <TextView
+                style="@style/TextAppearance.AppCompat.Caption"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Classes They Teach *"
+                android:labelFor="@+id/etTeacherClasses"
+                android:layout_marginBottom="4dp"/>
+            <EditText
+                android:id="@+id/etTeacherClasses"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Select classes"
+                android:focusable="false"
+                android:clickable="true"
+                android:layout_marginBottom="24dp"/>
+
+            <!-- Save Button -->
+            <Button
+                android:id="@+id/btnSaveTeacher"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Save Teacher"
+                android:layout_gravity="center_horizontal"/>
+
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- Delete Button -->
+    <Button
+        android:id="@+id/btnDeleteTeacher"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:backgroundTint="#F23F3F"
+        android:text="Delete"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
