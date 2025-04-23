@@ -1,18 +1,15 @@
-// app/src/main/java/com/example/yogaappadmin/model/TeacherModel.java
+// TeacherModel.java
 package com.example.yogaappadmin.model;
 
 public class TeacherModel {
-    private long id;
+    private long   id;
     private String name;
     private String bio;
     private String classesCsv;
 
-    /**
-     * @param id           database primary key
-     * @param name         teacher’s full name
-     * @param bio          optional biography or notes
-     * @param classesCsv   comma‑separated list of class‑type names they teach
-     */
+    /** Required by Firebase */
+    public TeacherModel() { }
+
     public TeacherModel(long id, String name, String bio, String classesCsv) {
         this.id         = id;
         this.name       = name;
@@ -20,7 +17,7 @@ public class TeacherModel {
         this.classesCsv = classesCsv;
     }
 
-    // --- Getters ---
+    // Getters
     public long   getId()         { return id; }
     public String getName()       { return name; }
     public String getBio()        { return bio; }

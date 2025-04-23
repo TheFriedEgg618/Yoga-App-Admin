@@ -1,3 +1,4 @@
+// ClassModel.java
 package com.example.yogaappadmin.model;
 
 public class ClassModel {
@@ -12,18 +13,9 @@ public class ClassModel {
     private String type;
     private String description;
 
-    /**
-     * @param id           database primary key
-     * @param title        the class title
-     * @param teacherName  the teacher’s name
-     * @param day          comma‑separated day abbreviations (e.g. "Mon,Wed,Fri")
-     * @param time         time string ("HH:mm")
-     * @param capacity     maximum number of students
-     * @param duration     length in minutes
-     * @param price        cost, in your currency
-     * @param type         yoga type name
-     * @param description  optional description
-     */
+    /** Required by Firebase */
+    public ClassModel() { }
+
     public ClassModel(long id,
                       String title,
                       String teacherName,
@@ -46,16 +38,15 @@ public class ClassModel {
         this.description  = description;
     }
 
-    // --- Getters ---
-
-    public long   getId()            { return id; }
-    public String getTitle()         { return title; }
-    public String getTeacherName()   { return teacherName; }
-    public String getDay()           { return day; }
-    public String getTime()          { return time; }
-    public int    getCapacity()      { return capacity; }
-    public int    getDuration()      { return duration; }
-    public double getPrice()         { return price; }
-    public String getType()          { return type; }
-    public String getDescription()   { return description; }
+    // Getters
+    public long   getId()          { return id; }
+    public String getTitle()       { return title; }
+    public String getTeacherName() { return teacherName; }
+    public String getDay()         { return day; }
+    public String getTime()        { return time; }
+    public int    getCapacity()    { return capacity; }
+    public int    getDuration()    { return duration; }
+    public double getPrice()       { return price; }
+    public String getType()        { return type; }
+    public String getDescription() { return description; }
 }

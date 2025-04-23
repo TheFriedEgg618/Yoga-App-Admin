@@ -7,14 +7,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
-import com.example.yogaappadmin.R;
+
 import com.example.yogaappadmin.data.DatabaseHelper;
 import com.example.yogaappadmin.databinding.FragmentTeacherFormBinding;
 import com.example.yogaappadmin.model.YogaTypeModel;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,7 +26,7 @@ public class TeacherFormFragment extends Fragment {
     private DatabaseHelper dbHelper;
     private long teacherId = -1;
 
-    // back up of all yoga‐type names
+    // backup of all yoga‐type names
     private List<String> allTypes;
     // which ones are currently selected
     private boolean[] checkedTypes;
@@ -105,22 +107,17 @@ public class TeacherFormFragment extends Fragment {
         binding.etTeacherClasses.setFocusable(false);
         binding.etTeacherClasses.setClickable(true);
         binding.etTeacherClasses.setOnClickListener(v -> {
-            // show multi‐choice dialog
             AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
             builder.setTitle("Select Classes They Teach");
             builder.setMultiChoiceItems(
                     allTypes.toArray(new CharSequence[0]),
                     checkedTypes,
-                    (dialog, which, isChecked) -> {
-                        checkedTypes[which] = isChecked;
-                    }
+                    (dialog, which, isChecked) -> checkedTypes[which] = isChecked
             );
             builder.setPositiveButton("OK", (dialog, which) -> {
                 selectedTypeNames.clear();
                 for (int i = 0; i < allTypes.size(); i++) {
-                    if (checkedTypes[i]) {
-                        selectedTypeNames.add(allTypes.get(i));
-                    }
+                    if (checkedTypes[i]) selectedTypeNames.add(allTypes.get(i));
                 }
                 binding.etTeacherClasses.setText(
                         TextUtils.join(", ", selectedTypeNames)
@@ -136,14 +133,19 @@ public class TeacherFormFragment extends Fragment {
             String name = binding.etTeacherName.getText().toString().trim();
             if (TextUtils.isEmpty(name)) {
                 binding.etTeacherName.setError("Name required");
+                Toast.makeText(requireContext(),
+                        "Name is required",
+                        Toast.LENGTH_SHORT).show();
                 return;
             }
+
             if (selectedTypeNames.isEmpty()) {
                 Toast.makeText(requireContext(),
                         "Please select at least one class",
                         Toast.LENGTH_SHORT).show();
                 return;
             }
+
             String bio = binding.etTeacherBio.getText().toString().trim();
             String classesCsv = TextUtils.join(",", selectedTypeNames);
 

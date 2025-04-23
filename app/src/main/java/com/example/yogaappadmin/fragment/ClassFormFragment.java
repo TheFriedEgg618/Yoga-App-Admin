@@ -16,7 +16,6 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 
-import com.example.yogaappadmin.R;
 import com.example.yogaappadmin.data.DatabaseHelper;
 import com.example.yogaappadmin.databinding.FragmentClassFormBinding;
 import com.example.yogaappadmin.model.TeacherModel;
@@ -165,6 +164,7 @@ public class ClassFormFragment extends Fragment {
             String title = binding.editTextTitle.getText().toString().trim();
             if (TextUtils.isEmpty(title)) {
                 binding.editTextTitle.setError("Title required");
+                Toast.makeText(getContext(), "Title is required", Toast.LENGTH_SHORT).show();
                 return;
             }
 
@@ -178,7 +178,7 @@ public class ClassFormFragment extends Fragment {
             }
             String daysCsv = sb.toString();
             if (TextUtils.isEmpty(daysCsv)) {
-                Toast.makeText(getContext(), "Select at least one day", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Please select at least one day", Toast.LENGTH_SHORT).show();
                 return;
             }
 
@@ -186,6 +186,7 @@ public class ClassFormFragment extends Fragment {
             String time = binding.editTextTime.getText().toString().trim();
             if (TextUtils.isEmpty(time)) {
                 binding.editTextTime.setError("Time required");
+                Toast.makeText(getContext(), "Time is required", Toast.LENGTH_SHORT).show();
                 return;
             }
 
@@ -197,6 +198,7 @@ public class ClassFormFragment extends Fragment {
                 if (capacity <= 0) throw new NumberFormatException();
             } catch (Exception e) {
                 binding.editTextCapacity.setError("Valid capacity required");
+                Toast.makeText(getContext(), "Please enter a valid capacity", Toast.LENGTH_SHORT).show();
                 return;
             }
 
@@ -208,6 +210,7 @@ public class ClassFormFragment extends Fragment {
                 if (duration <= 0) throw new NumberFormatException();
             } catch (Exception e) {
                 binding.editTextDuration.setError("Valid duration required");
+                Toast.makeText(getContext(), "Please enter a valid duration", Toast.LENGTH_SHORT).show();
                 return;
             }
 
@@ -219,20 +222,21 @@ public class ClassFormFragment extends Fragment {
                 if (price < 0) throw new NumberFormatException();
             } catch (Exception e) {
                 binding.editTextPrice.setError("Valid price required");
+                Toast.makeText(getContext(), "Please enter a valid price", Toast.LENGTH_SHORT).show();
                 return;
             }
 
             // Teacher
             String teacher = binding.spinnerTeacher.getSelectedItem().toString();
             if ("Select Teacher".equals(teacher)) {
-                Toast.makeText(getContext(), "Teacher required", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Please select a teacher", Toast.LENGTH_SHORT).show();
                 return;
             }
 
             // Type
             String type = binding.spinnerClassType.getSelectedItem().toString();
             if ("Select Type".equals(type)) {
-                Toast.makeText(getContext(), "Class type required", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Please select a class type", Toast.LENGTH_SHORT).show();
                 return;
             }
 
@@ -261,7 +265,8 @@ public class ClassFormFragment extends Fragment {
                 nav.navigateUp();
             } else {
                 Toast.makeText(getContext(),
-                        "Database error", Toast.LENGTH_SHORT
+                        "Database error",
+                        Toast.LENGTH_SHORT
                 ).show();
             }
         });

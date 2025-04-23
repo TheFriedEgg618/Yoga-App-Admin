@@ -12,7 +12,6 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
-import com.example.yogaappadmin.R;
 import com.example.yogaappadmin.data.DatabaseHelper;
 import com.example.yogaappadmin.databinding.FragmentYogaTypeFormBinding;
 
@@ -52,15 +51,13 @@ public class YogaTypeFormFragment extends Fragment {
         Bundle args = getArguments();
         if (args != null && args.containsKey("typeId") && args.getLong("typeId", -1L) >= 0) {
             typeId = args.getLong("typeId");
-            // title
+
             binding.etYogaTypeName.setText(args.getString("typeName", ""));
-            // description
             binding.etYogaTypeDescription.setText(args.getString("description", ""));
-            // adjust UI strings
+
             binding.tvYogaTypeFormTitle.setText("Edit Class Type");
             binding.btnSaveType.setText("Update Type");
         } else {
-            // default to “add” mode
             binding.tvYogaTypeFormTitle.setText("Add Class Type");
             binding.btnSaveType.setText("Save Type");
         }
@@ -71,8 +68,12 @@ public class YogaTypeFormFragment extends Fragment {
             String name = binding.etYogaTypeName.getText().toString().trim();
             if (TextUtils.isEmpty(name)) {
                 binding.etYogaTypeName.setError("Name required");
+                Toast.makeText(requireContext(),
+                        "Name is required",
+                        Toast.LENGTH_SHORT).show();
                 return;
             }
+
             String desc = binding.etYogaTypeDescription.getText().toString().trim();
 
             boolean ok;
