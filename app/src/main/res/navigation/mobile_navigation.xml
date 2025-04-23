@@ -48,10 +48,10 @@
     <!-- Profile tab -->
     <!--suppress NavigationFile -->
     <fragment
-        android:id="@+id/navigation_profile"
-        android:name="com.example.yogaappadmin.fragment.ProfileFragment"
-        android:label="@string/title_profile"
-        tools:layout="@layout/fragment_profile" />
+        android:id="@+id/navigation_cloud"
+        android:name="com.example.yogaappadmin.fragment.CloudFragment"
+        android:label="Cloud Sync"
+        tools:layout="@layout/fragment_cloud" />
 
     <!-- Class Add/Edit screen -->
     <!--suppress NavigationFile -->

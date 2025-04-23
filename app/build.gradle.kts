@@ -1,5 +1,8 @@
 plugins {
     alias(libs.plugins.android.application)
+    // Add the Google services Gradle plugin
+    id("com.google.gms.google-services")
+
 }
 
 android {
@@ -35,6 +38,12 @@ android {
 }
 
 dependencies {
+    // Import the Firebase BoM
+    implementation(libs.firebase.bom)
+
+
+    // Add the dependencies for any other desired Firebase products
+    // https://firebase.google.com/docs/android/setup#available-libraries
 
     implementation(libs.appcompat)
     implementation(libs.material)

@@ -17,8 +17,8 @@
         android:title="Manage Entities" />
 
     <item
-        android:id="@+id/navigation_profile"
-        android:icon="@drawable/ic_profile_black_24dp"
-        android:title="@string/title_profile" />
+        android:id="@+id/navigation_cloud"
+        android:icon="@drawable/ic_cloud_sync_black_24dp"
+        android:title="Cloud Sync" />
 
 </menu>
