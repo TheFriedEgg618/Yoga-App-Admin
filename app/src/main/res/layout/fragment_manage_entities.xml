@@ -36,8 +36,11 @@
         android:id="@+id/toggleGroupMode"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/headerLayout"
         app:selectionRequired="true"
         app:singleSelection="true">
@@ -46,24 +49,24 @@
             android:id="@+id/btnTeachers"
             style="@style/Widget.MaterialComponents.Button.OutlinedButton"
             android:layout_width="0dp"
-            android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:textColor="@android:color/black"
-            android:textSize="16sp"
-            android:textColorHint="@color/text_black"
+            android:layout_weight="1"
+            android:insetLeft="4dp"
             android:text="Teachers"
-            android:insetLeft="4dp"/>
+            android:textColor="@android:color/black"
+            android:textColorHint="@color/text_black"
+            android:textSize="16sp" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnTypes"
             style="@style/Widget.MaterialComponents.Button.OutlinedButton"
             android:layout_width="0dp"
-            android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:textColor="@android:color/black"
-            android:textSize="16sp"
+            android:layout_weight="1"
+            android:insetRight="4dp"
             android:text="Class Types"
-            android:insetRight="4dp"/>
+            android:textColor="@android:color/black"
+            android:textSize="16sp" />
 
     </com.google.android.material.button.MaterialButtonToggleGroup>
 
@@ -71,12 +74,12 @@
         android:id="@+id/rvManageList"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="8dp"
         android:overScrollMode="never"
-        app:layout_constraintTop_toBottomOf="@+id/toggleGroupMode"
         app:layout_constraintBottom_toTopOf="@+id/btnAdd"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/toggleGroupMode" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnAdd"

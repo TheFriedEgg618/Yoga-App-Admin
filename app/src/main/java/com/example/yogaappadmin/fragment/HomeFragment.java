@@ -10,7 +10,6 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -20,38 +19,53 @@ import com.example.yogaappadmin.adapter.ClassAdapter;
 import com.example.yogaappadmin.data.DatabaseHelper;
 import com.example.yogaappadmin.databinding.FragmentHomeBinding;
 import com.example.yogaappadmin.model.ClassModel;
-import com.example.yogaappadmin.viewmodel.HomeViewModel;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 public class HomeFragment extends Fragment {
 
     private FragmentHomeBinding binding;
-    private HomeViewModel homeViewModel;
-    private DatabaseHelper dbHelper;
+    private DatabaseHelper       dbHelper;
+    private ClassAdapter         adapter;
+
+    // Formatter & day‐of‐week map
+    private final SimpleDateFormat timeFmt = new SimpleDateFormat("HH:mm", Locale.getDefault());
+    private static final Map<String,Integer> DOW = new HashMap<>();
+    static {
+        DOW.put("Sun", Calendar.SUNDAY);
+        DOW.put("Mon", Calendar.MONDAY);
+        DOW.put("Tue", Calendar.TUESDAY);
+        DOW.put("Wed", Calendar.WEDNESDAY);
+        DOW.put("Thu", Calendar.THURSDAY);
+        DOW.put("Fri", Calendar.FRIDAY);
+        DOW.put("Sat", Calendar.SATURDAY);
+    }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container,
                              Bundle savedInstanceState) {
-        homeViewModel = new ViewModelProvider(this).get(HomeViewModel.class);
-        binding = FragmentHomeBinding.inflate(inflater, container, false);
-        dbHelper = new DatabaseHelper(requireContext());
+        binding      = FragmentHomeBinding.inflate(inflater, container, false);
+        dbHelper     = new DatabaseHelper(requireContext());
 
+        // RecyclerView + adapter setup
         binding.recyclerViewClasses.setLayoutManager(
                 new LinearLayoutManager(requireContext())
         );
-        ClassAdapter adapter = new ClassAdapter(new ClassAdapter.Listener() {
+        adapter = new ClassAdapter(new ClassAdapter.Listener() {
             @Override
-            public void onEdit(ClassModel item) {
-                // Build the bundle with all 8 args
+            public void onEdit(@NonNull ClassModel item) {
                 Bundle args = new Bundle();
                 args.putLong("classId",      item.getId());
-                args.putString("title",    item.getTitle());
+                args.putString("title",      item.getTitle());
                 args.putString("dayCsv",     item.getDay());
                 args.putString("time",       item.getTime());
                 args.putInt("capacity",      item.getCapacity());
                 args.putInt("duration",      item.getDuration());
                 args.putFloat("price",       (float)item.getPrice());
-                args.putString("teacher",  item.getTeacherName());
+                args.putString("teacher",    item.getTeacherName());
                 args.putString("type",       item.getType());
                 args.putString("description",item.getDescription());
 
@@ -60,7 +74,7 @@ public class HomeFragment extends Fragment {
             }
 
             @Override
-            public void onDelete(ClassModel item) {
+            public void onDelete(@NonNull ClassModel item) {
                 new AlertDialog.Builder(requireContext())
                         .setTitle("Delete Class")
                         .setMessage("Are you sure you want to delete this class?")
@@ -69,7 +83,7 @@ public class HomeFragment extends Fragment {
                             if (rows > 0) {
                                 Toast.makeText(getContext(),
                                         "Class deleted", Toast.LENGTH_SHORT).show();
-                                homeViewModel.refresh();
+                                loadUpcomingThisWeek();
                             } else {
                                 Toast.makeText(getContext(),
                                         "Error deleting class", Toast.LENGTH_SHORT).show();
@@ -81,29 +95,89 @@ public class HomeFragment extends Fragment {
         });
         binding.recyclerViewClasses.setAdapter(adapter);
 
-        homeViewModel.getClasses().observe(getViewLifecycleOwner(), list -> {
-            adapter.setData(list);
-            binding.tvUpcomingTitleCount.setText(String.valueOf(list.size()));
+        // Add‐button
+        binding.btnAddClass.setOnClickListener(v -> {
+            NavController nav = NavHostFragment.findNavController(this);
+            nav.navigate(R.id.action_navigation_home_to_ClassFormFragment);
         });
+
+        // Initial load
+        loadUpcomingThisWeek();
 
         return binding.getRoot();
     }
 
     @Override
-    public void onViewCreated(@NonNull View view,
-                              @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        binding.btnAddClass.setOnClickListener(v -> {
-            NavController nav = NavHostFragment.findNavController(this);
-            // no bundle → defaults kick in → add‑mode
-            nav.navigate(R.id.action_navigation_home_to_ClassFormFragment);
-        });
-    }
-
-    @Override
     public void onResume() {
         super.onResume();
-        homeViewModel.refresh();
+        loadUpcomingThisWeek();
+    }
+
+    /** Load, filter for later this week, sort, and display. */
+    private void loadUpcomingThisWeek() {
+        List<ClassModel> all = dbHelper.getAllClassesList();
+        List<ClassModel> upcoming = new ArrayList<>();
+
+        Calendar now     = Calendar.getInstance();
+        int      todayDow = now.get(Calendar.DAY_OF_WEEK);
+        Date     nowTime  = now.getTime();
+
+        for (ClassModel item : all) {
+            String[] parts = item.getDay().split(",");
+            for (String d : parts) {
+                Integer dayCode = DOW.get(d);
+                if (dayCode == null) continue;
+
+                // Future weekday
+                if (dayCode > todayDow) {
+                    upcoming.add(item);
+                    break;
+                }
+
+                // Today but later time
+                if (dayCode == todayDow) {
+                    try {
+                        Date classTime = timeFmt.parse(item.getTime());
+                        Calendar classCal = (Calendar) now.clone();
+                        classCal.set(Calendar.HOUR_OF_DAY, classTime.getHours());
+                        classCal.set(Calendar.MINUTE,     classTime.getMinutes());
+                        classCal.set(Calendar.SECOND,     0);
+                        if (classCal.getTime().after(nowTime)) {
+                            upcoming.add(item);
+                        }
+                    } catch (ParseException ignored) { }
+                    break;
+                }
+                // Past day → skip
+            }
+        }
+
+        // Sort by day‐of‐week, then by time
+        Collections.sort(upcoming, (a, b) -> {
+            int da = firstDowIndex(a.getDay());
+            int db = firstDowIndex(b.getDay());
+            if (da != db) return da - db;
+            try {
+                Date ta = timeFmt.parse(a.getTime());
+                Date tb = timeFmt.parse(b.getTime());
+                return ta.compareTo(tb);
+            } catch (ParseException e) {
+                return 0;
+            }
+        });
+
+        // Display & count
+        adapter.setData(upcoming);
+        binding.tvUpcomingTitleCount.setText(String.valueOf(upcoming.size()));
+    }
+
+    /** Returns the first valid Calendar.DAY_OF_WEEK from the CSV */
+    private int firstDowIndex(String csv) {
+        for (String d : csv.split(",")) {
+            Integer code = DOW.get(d.trim());
+            if (code != null) return code;
+        }
+        return Integer.MAX_VALUE;
     }
 
     @Override

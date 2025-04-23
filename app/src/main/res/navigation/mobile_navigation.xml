@@ -5,6 +5,7 @@
     android:id="@+id/mobile_navigation"
     app:startDestination="@id/navigation_home">
 
+    <!-- Home tab -->
     <!--suppress NavigationFile -->
     <fragment
         android:id="@+id/navigation_home"
@@ -16,13 +17,20 @@
             app:destination="@id/navigation_add_edit_class" />
     </fragment>
 
+    <!-- Dashboard tab -->
     <!--suppress NavigationFile -->
     <fragment
         android:id="@+id/navigation_dashboard"
         android:name="com.example.yogaappadmin.fragment.DashboardFragment"
         android:label="@string/title_dashboard"
-        tools:layout="@layout/fragment_dashboard" />
+        tools:layout="@layout/fragment_dashboard">
+        <!-- Add/Edit action from Dashboard to ClassForm -->
+        <action
+            android:id="@+id/action_navigation_dashboard_to_ClassFormFragment"
+            app:destination="@id/navigation_add_edit_class" />
+    </fragment>
 
+    <!-- Manage Settings (teachers & types) -->
     <!--suppress NavigationFile -->
     <fragment
         android:id="@+id/navigation_manage_settings"
@@ -37,6 +45,7 @@
             app:destination="@id/yogaTypeFormFragment" />
     </fragment>
 
+    <!-- Profile tab -->
     <!--suppress NavigationFile -->
     <fragment
         android:id="@+id/navigation_profile"
@@ -44,8 +53,8 @@
         android:label="@string/title_profile"
         tools:layout="@layout/fragment_profile" />
 
+    <!-- Class Add/Edit screen -->
     <!--suppress NavigationFile -->
-    <!-- Class Add/Edit -->
     <fragment
         android:id="@+id/navigation_add_edit_class"
         android:name="com.example.yogaappadmin.fragment.ClassFormFragment"
@@ -57,62 +66,51 @@
             android:name="classId"
             app:argType="long"
             android:defaultValue="-1L" />
-
         <argument
             android:name="title"
             app:argType="string"
             android:defaultValue="" />
-
         <argument
             android:name="dayCsv"
             app:argType="string"
             android:defaultValue="" />
-
         <argument
             android:name="time"
             app:argType="string"
             android:defaultValue="" />
-
         <argument
             android:name="capacity"
             app:argType="integer"
             android:defaultValue="0" />
-
         <argument
             android:name="duration"
             app:argType="integer"
             android:defaultValue="0" />
-
         <argument
             android:name="price"
             app:argType="float"
             android:defaultValue="0.0f" />
-
         <argument
             android:name="teacher"
             app:argType="string"
             android:defaultValue="" />
-
         <argument
             android:name="type"
             app:argType="string"
             android:defaultValue="" />
-
         <argument
             android:name="description"
             app:argType="string"
             android:defaultValue="" />
     </fragment>
 
-    <!--suppress NavigationFile -->
     <!-- Teacher add/edit -->
+    <!--suppress NavigationFile -->
     <fragment
         android:id="@+id/teacherFormFragment"
         android:name="com.example.yogaappadmin.fragment.TeacherFormFragment"
         android:label="Add / Edit Teacher"
         tools:layout="@layout/fragment_teacher_form">
-
-        <!-- Navigation arguments for add/edit mode -->
         <argument
             android:name="teacherId"
             app:argType="long"
@@ -131,14 +129,13 @@
             android:defaultValue="" />
     </fragment>
 
+    <!-- Class-type add/edit -->
     <!--suppress NavigationFile -->
     <fragment
         android:id="@+id/yogaTypeFormFragment"
         android:name="com.example.yogaappadmin.fragment.YogaTypeFormFragment"
         android:label="Add / Edit Class Type"
         tools:layout="@layout/fragment_yoga_type_form">
-
-        <!-- Navigation arguments for add/edit mode -->
         <argument
             android:name="typeId"
             app:argType="long"
