@@ -7,6 +7,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.yogaappadmin.R;
@@ -45,13 +46,34 @@ public class TeacherAdapter extends RecyclerView.Adapter<TeacherAdapter.VH> {
     @Override
     public void onBindViewHolder(@NonNull VH holder, int position) {
         TeacherModel teacher = data.get(position);
+
+        // — Bio (same as before) —
         String bio = teacher.getBio();
         if (bio.isBlank()) { bio = "N/A"; }
-
-        holder.tvName.setText(teacher.getName());
-        holder.tvClasses.setText("Teaches: " + teacher.getClassesCsv());
         holder.tvBio.setText("Bio: " + bio);
 
+        // — Classes CSV with error if empty —
+        String csv = teacher.getClassesCsv();
+        if (csv == null || csv.trim().isEmpty()) {
+            holder.tvClasses.setText("Teaches: (none)");
+            holder.tvClasses.setError("No classes assigned");
+            holder.tvClasses.setTextColor(
+                    ContextCompat.getColor(holder.itemView.getContext(),
+                            com.google.android.material.R.color.design_default_color_error)
+            );
+        } else {
+            holder.tvClasses.setError(null);
+            holder.tvClasses.setTextColor(
+                    ContextCompat.getColor(holder.itemView.getContext(),
+                            R.color.text_black)
+            );
+            holder.tvClasses.setText("Teaches: " + csv);
+        }
+
+        // — Name (you might also want to flag missing names, but up to you) —
+        holder.tvName.setText(teacher.getName());
+
+        // — Button callbacks —
         holder.btnEdit.setOnClickListener(v -> listener.onEdit(teacher));
         holder.btnDelete.setOnClickListener(v -> listener.onDelete(teacher));
     }

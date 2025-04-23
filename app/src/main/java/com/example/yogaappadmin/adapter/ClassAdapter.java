@@ -7,6 +7,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.yogaappadmin.R;
@@ -49,7 +50,21 @@ public class ClassAdapter extends RecyclerView.Adapter<ClassAdapter.VH> {
         // Title + Teacher in one TextView
         String title = it.getTitle();               // e.g. "Morning Flow"
         String teacher = it.getTeacherName();       // e.g. "Jane Smith"
-        h.tvClassTitle.setText(title + " by " + teacher);
+        if (teacher == null || teacher.trim().isEmpty()) {
+            // show title alone, mark error
+            h.tvClassTitle.setText(title + " - Teacher required");
+            h.tvClassTitle.setError("Teacher required");
+            h.tvClassTitle.setTextColor(
+                    ContextCompat.getColor(h.itemView.getContext(),
+                            com.google.android.material.R.color.design_default_color_error));
+            } else {
+            // normal styling
+                    h.tvClassTitle.setError(null);
+            h.tvClassTitle.setTextColor(
+                        ContextCompat.getColor(h.itemView.getContext(),
+                                R.color.purple_500));
+            h.tvClassTitle.setText(title + " by " + teacher);
+        }
 
         // Date & Time
         h.tvClassDate.setText("Date: " + it.getDay());
@@ -60,8 +75,23 @@ public class ClassAdapter extends RecyclerView.Adapter<ClassAdapter.VH> {
         h.tvClassPrice.setText(String.format("Price: £%.2f", it.getPrice()));
 
         // Type & Duration
-        h.tvClassType.setText("Type: " + it.getType());
-        h.tvClassDuration.setText("Duration: " + it.getDuration() + " min");
+        String type = it.getType();
+        if (type == null || type.trim().isEmpty()) {
+            // mark error
+            h.tvClassType.setText("Type: (required)");
+            h.tvClassType.setError("Type required");
+            h.tvClassType.setTextColor(
+                    ContextCompat.getColor(h.itemView.getContext(),
+                            com.google.android.material.R.color.design_default_color_error));
+        } else {
+            // normal styling
+            h.tvClassType.setError(null);
+            h.tvClassType.setTextColor(
+                        ContextCompat.getColor(h.itemView.getContext(),
+                                R.color.text_black));
+            h.tvClassType.setText("Type: " + type);
+        }
+        
 
         // Button callbacks
         h.btnEditClass.setOnClickListener(v -> listener.onEdit(it));

@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.text.TextUtils;
 
 import com.example.yogaappadmin.model.ClassModel;
 import com.example.yogaappadmin.model.TeacherModel;
@@ -13,10 +14,9 @@ import com.example.yogaappadmin.model.YogaTypeModel;
 import java.util.ArrayList;
 import java.util.List;
 
-
 public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME    = "yoga_app.db";
-    private static final int    DATABASE_VERSION = 4;
+    private static final int    DATABASE_VERSION = 5;
 
     // --- CLASSES table ---
     public static final String TABLE_CLASSES        = "classes";
@@ -49,13 +49,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             "CREATE TABLE " + TABLE_CLASSES + " ("
                     + COLUMN_ID           + " INTEGER PRIMARY KEY AUTOINCREMENT, "
                     + COLUMN_TITLE        + " TEXT NOT NULL, "
-                    + COLUMN_TEACHER_NAME + " TEXT NOT NULL, "
+                    + COLUMN_TEACHER_NAME + " TEXT, "
                     + COLUMN_DAY          + " TEXT NOT NULL, "
                     + COLUMN_TIME         + " TEXT NOT NULL, "
                     + COLUMN_CAPACITY     + " INTEGER NOT NULL, "
                     + COLUMN_DURATION     + " INTEGER NOT NULL, "
                     + COLUMN_PRICE        + " REAL NOT NULL, "
-                    + COLUMN_TYPE         + " TEXT NOT NULL, "
+                    + COLUMN_TYPE         + " TEXT, "
                     + COLUMN_DESCRIPTION  + " TEXT"
                     + ");";
 
@@ -92,15 +92,45 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             db.execSQL(CREATE_TEACHERS_TABLE);
             db.execSQL(CREATE_CLASS_TYPES_TABLE);
         }
-        // v2→3: shit goes down hill
-        if (oldVersion < 3) {
-            ;
-        }
-        // v3→4: add teacher_name column to classes
+        // v2→3: no changes
+        // v3→4: add teacher_name column (non-null default '')
         if (oldVersion < 4) {
             db.execSQL("ALTER TABLE " + TABLE_CLASSES
                     + " ADD COLUMN " + COLUMN_TEACHER_NAME
                     + " TEXT NOT NULL DEFAULT ''");
+        }
+        // v4→5: rebuild classes table to make teacher_name & class_type nullable
+        if (oldVersion < 5) {
+            // rename old table
+            db.execSQL("ALTER TABLE " + TABLE_CLASSES + " RENAME TO classes_old;");
+            // create new table with updated schema
+            db.execSQL(CREATE_CLASSES_TABLE);
+            // copy data (including existing teacher_name & class_type)
+            db.execSQL(
+                    "INSERT INTO " + TABLE_CLASSES +
+                            " (" + COLUMN_ID + "," +
+                            COLUMN_TITLE + "," +
+                            COLUMN_TEACHER_NAME + "," +
+                            COLUMN_DAY + "," +
+                            COLUMN_TIME + "," +
+                            COLUMN_CAPACITY + "," +
+                            COLUMN_DURATION + "," +
+                            COLUMN_PRICE + "," +
+                            COLUMN_TYPE + "," +
+                            COLUMN_DESCRIPTION +
+                            ") SELECT " +
+                            COLUMN_ID + "," +
+                            COLUMN_TITLE + "," +
+                            COLUMN_TEACHER_NAME + "," +
+                            COLUMN_DAY + "," +
+                            COLUMN_TIME + "," +
+                            COLUMN_CAPACITY + "," +
+                            COLUMN_DURATION + "," +
+                            COLUMN_PRICE + "," +
+                            COLUMN_TYPE + "," +
+                            COLUMN_DESCRIPTION +
+                            " FROM classes_old;"
+            );
         }
     }
 
@@ -225,12 +255,44 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public int deleteTeacher(long id) {
         SQLiteDatabase db = getWritableDatabase();
-        int rows = db.delete(
+
+        // 1) find the teacher’s name
+        String teacherName = null;
+        try (Cursor c = db.query(
                 TABLE_TEACHERS,
-                COLUMN_TEACHER_ID + "=?", new String[]{String.valueOf(id)}
+                new String[]{ COLUMN_TEACHER_NAME_T },
+                COLUMN_TEACHER_ID + "=?",
+                new String[]{ String.valueOf(id) },
+                null, null, null
+        )) {
+            if (c.moveToFirst()) {
+                teacherName = c.getString(
+                        c.getColumnIndexOrThrow(COLUMN_TEACHER_NAME_T)
+                );
+            }
+        }
+
+        // 2) delete the teacher
+        int rowsDeleted = db.delete(
+                TABLE_TEACHERS,
+                COLUMN_TEACHER_ID + "=?",
+                new String[]{ String.valueOf(id) }
         );
+
+        // 3) clear out any classes that referenced that teacher
+        if (rowsDeleted > 0 && teacherName != null) {
+            ContentValues cv = new ContentValues();
+            cv.put(COLUMN_TEACHER_NAME,"");
+            db.update(
+                    TABLE_CLASSES,
+                    cv,
+                    COLUMN_TEACHER_NAME + "=?",
+                    new String[]{ teacherName }
+            );
+        }
+
         db.close();
-        return rows;
+        return rowsDeleted;
     }
 
     public List<TeacherModel> getAllTeachersModels() {
@@ -281,12 +343,75 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public int deleteYogaType(long id) {
         SQLiteDatabase db = getWritableDatabase();
-        int rows = db.delete(
+
+        // 1) lookup the type name
+        String typeName = null;
+        try (Cursor c = db.query(
                 TABLE_CLASS_TYPES,
-                COLUMN_TYPE_ID + "=?", new String[]{String.valueOf(id)}
+                new String[]{ COLUMN_TYPE_NAME },
+                COLUMN_TYPE_ID + "=?",
+                new String[]{ String.valueOf(id) },
+                null, null, null
+        )) {
+            if (c.moveToFirst()) {
+                typeName = c.getString(c.getColumnIndexOrThrow(COLUMN_TYPE_NAME));
+            }
+        }
+
+        // 2) delete the class_type
+        int rowsDeleted = db.delete(
+                TABLE_CLASS_TYPES,
+                COLUMN_TYPE_ID + "=?",
+                new String[]{ String.valueOf(id) }
         );
+
+        if (rowsDeleted > 0 && typeName != null) {
+            // 3a) clear out any classes that referenced that type
+            ContentValues cvClass = new ContentValues();
+            cvClass.put(COLUMN_TYPE, "");
+            db.update(
+                    TABLE_CLASSES,
+                    cvClass,
+                    COLUMN_TYPE + "=?",
+                    new String[]{ typeName }
+            );
+
+            // 3b) remove from each teacher’s CSV
+            try (Cursor tc = db.query(
+                    TABLE_TEACHERS,
+                    new String[]{ COLUMN_TEACHER_ID, COLUMN_TEACHER_CLASSES },
+                    null, null, null, null, null
+            )) {
+                while (tc.moveToNext()) {
+                    long tid   = tc.getLong(tc.getColumnIndexOrThrow(COLUMN_TEACHER_ID));
+                    String csv = tc.getString(tc.getColumnIndexOrThrow(COLUMN_TEACHER_CLASSES));
+                    if (csv != null && !csv.isEmpty()) {
+                        // build a new list without typeName
+                        String[] parts = csv.split(",");
+                        List<String> kept = new ArrayList<>();
+                        for (String p : parts) {
+                            if (!p.trim().equals(typeName)) {
+                                kept.add(p.trim());
+                            }
+                        }
+                        String newCsv = TextUtils.join(",", kept);
+                        if (!newCsv.equals(csv)) {
+                            ContentValues cvT = new ContentValues();
+                            cvT.put(COLUMN_TEACHER_CLASSES, newCsv);
+                            db.update(
+                                    TABLE_TEACHERS,
+                                    cvT,
+                                    COLUMN_TEACHER_ID + "=?",
+                                    new String[]{ String.valueOf(tid) }
+                            );
+                        }
+                    }
+                }
+            }
+        }
+
         db.close();
-        return rows;
+        return rowsDeleted;
     }
 
     public List<YogaTypeModel> getAllYogaTypesModels() {
