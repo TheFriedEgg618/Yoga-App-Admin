@@ -1,7 +1,7 @@
 package com.example.yogaappadmin.fragment;
 
-import android.app.AlertDialog;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +11,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
@@ -51,8 +52,7 @@ public class DashboardFragment extends Fragment {
         // — Select all 7 days by default —
         MaterialButtonToggleGroup dayToggle = binding.toggleGroupDays.getRoot();
         for (int i = 0; i < dayToggle.getChildCount(); i++) {
-            View child = dayToggle.getChildAt(i);
-            dayToggle.check(child.getId());
+            dayToggle.check(dayToggle.getChildAt(i).getId());
         }
 
         // — Listen for day‐toggle changes —
@@ -66,16 +66,16 @@ public class DashboardFragment extends Fragment {
             @Override
             public void onEdit(@NonNull ClassModel item) {
                 Bundle args = new Bundle();
-                args.putLong("classId",      item.getId());
-                args.putString("title",      item.getTitle());
-                args.putString("dayCsv",     item.getDay());
-                args.putString("time",       item.getTime());
-                args.putInt("capacity",      item.getCapacity());
-                args.putInt("duration",      item.getDuration());
-                args.putFloat("price",       (float)item.getPrice());
-                args.putString("teacher",    item.getTeacherName());
-                args.putString("type",       item.getType());
-                args.putString("description",item.getDescription());
+                args.putLong("classId",       item.getId());
+                args.putString("title",       item.getTitle());
+                args.putString("dayCsv",      item.getDay());
+                args.putString("time",        item.getTime());
+                args.putInt("capacity",       item.getCapacity());
+                args.putInt("duration",       item.getDuration());
+                args.putFloat("price",        (float)item.getPrice());
+                args.putString("teacher",     item.getTeacherName());
+                args.putString("type",        item.getType());
+                args.putString("description", item.getDescription());
 
                 NavController nav = NavHostFragment.findNavController(DashboardFragment.this);
                 nav.navigate(R.id.action_navigation_dashboard_to_ClassFormFragment, args);
@@ -99,6 +99,23 @@ public class DashboardFragment extends Fragment {
                         })
                         .setNegativeButton("Cancel", null)
                         .show();
+            }
+            @Override
+            public void onItemClick(@NonNull ClassModel item) {
+                Bundle args = new Bundle();
+                args.putLong   ("classId",      item.getId());
+                args.putString ("title",        item.getTitle());
+                args.putString ("dayCsv",       item.getDay());
+                args.putString ("time",         item.getTime());
+                args.putInt    ("capacity",     item.getCapacity());
+                args.putInt    ("duration",     item.getDuration());
+                args.putFloat  ("price",        (float)item.getPrice());
+                args.putString ("teacher",      item.getTeacherName());
+                args.putString ("type",         item.getType());
+                args.putString ("description",  item.getDescription());
+
+                NavController nav = NavHostFragment.findNavController(DashboardFragment.this);
+                nav.navigate(R.id.action_navigation_dashboard_to_navigation_class_details, args);
             }
         });
         binding.recyclerViewClasses.setAdapter(adapter);
@@ -193,19 +210,26 @@ public class DashboardFragment extends Fragment {
             if (!matchesDay) continue;
 
             // teacher filter
-            if (selectedTeacher != null
-                    && !selectedTeacher.equals(c.getTeacherName())) {
+            if (selectedTeacher != null && !selectedTeacher.equals(c.getTeacherName())) {
                 continue;
             }
             // type filter
-            if (selectedType != null
-                    && !selectedType.equals(c.getType())) {
+            if (selectedType != null && !selectedType.equals(c.getType())) {
                 continue;
             }
 
             filtered.add(c);
         }
+
+        // update adapter
         adapter.setData(filtered);
+
+        // update count text
+        int count = filtered.size();
+        String text = count + (count == 1
+                ? " class found"
+                : " classes found");
+        binding.tvNumClass.setText(text);
     }
 
     @Override

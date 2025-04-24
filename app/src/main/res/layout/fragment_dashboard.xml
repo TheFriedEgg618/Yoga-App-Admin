@@ -19,7 +19,6 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <TextView
-            android:id="@+id/tvTodayDate"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
@@ -37,15 +36,17 @@
 
     <!-- days toggle -->
     <TextView
-        android:id="@+id/tvLabel"
+        android:id="@+id/tvLabel1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
-        android:textSize="16sp"
-        android:textColor="@color/black"
+        android:layout_marginEnd="16dp"
         android:labelFor="@id/toggleGroupDays"
-        android:text="Filter by day"
+        android:text="Filter by day of the week"
+        android:textColor="@color/black"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/headerLayout" />
 
@@ -59,34 +60,68 @@
         android:layout_marginEnd="16dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tvLabel" />
+        app:layout_constraintTop_toBottomOf="@id/tvLabel1" />
 
-
-    <!-- ✦ Filter row ✦ -->
-    <LinearLayout
-        android:id="@+id/filterLayout"
+    <TextView
+        android:id="@+id/tvLabel2"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:paddingHorizontal="16dp"
-        android:paddingTop="8dp"
-        app:layout_constraintTop_toBottomOf="@id/toggleGroupDays"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:labelFor="@id/spinnerTeacherFilter"
+        android:text="Filter by Teacher"
+        android:minEms="10"
+        android:maxEms="10"
+        android:textColor="@color/black"
+        android:textSize="16sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:layout_constraintTop_toBottomOf="@+id/toggleGroupDays" />
 
-        <Spinner
-            android:id="@+id/spinnerTeacherFilter"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"/>
+    <Spinner
+        android:id="@+id/spinnerTeacherFilter"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:layout_weight="1"
+        app:layout_constraintEnd_toEndOf="@+id/tvLabel2"
+        app:layout_constraintStart_toStartOf="@+id/tvLabel2"
+        app:layout_constraintTop_toBottomOf="@+id/tvLabel2" />
 
-        <Spinner
-            android:id="@+id/spinnerTypeFilter"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_marginStart="8dp"/>
-    </LinearLayout>
+    <TextView
+    android:id="@+id/tvLabel3"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="8dp"
+    android:labelFor="@id/spinnerTeacherFilter"
+    android:text="Filter by Class Type"
+    android:textColor="@color/black"
+    android:textSize="16sp"
+    app:layout_constraintEnd_toEndOf="@+id/tvLabel1"
+    app:layout_constraintStart_toEndOf="@+id/tvLabel2"
+    app:layout_constraintTop_toTopOf="@+id/tvLabel2" />
+
+    <Spinner
+        android:id="@+id/spinnerTypeFilter"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:layout_weight="1"
+        app:layout_constraintEnd_toEndOf="@+id/tvLabel3"
+        app:layout_constraintStart_toStartOf="@+id/tvLabel3"
+        app:layout_constraintTop_toBottomOf="@+id/tvLabel3" />
+
+    <TextView
+        android:id="@+id/tvNumClass"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:labelFor="@id/spinnerTeacherFilter"
+        android:text="4 classes found"
+        android:textColor="@color/text_black"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="@+id/spinnerTeacherFilter"
+        app:layout_constraintTop_toBottomOf="@+id/spinnerTeacherFilter" />
 
 
     <!-- shift RecyclerView below filterLayout -->
@@ -97,9 +132,9 @@
         android:clipToPadding="false"
         android:paddingTop="8dp"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        app:layout_constraintTop_toBottomOf="@+id/filterLayout"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvNumClass"
         tools:itemCount="3"
         tools:listitem="@layout/item_class_card" />
 

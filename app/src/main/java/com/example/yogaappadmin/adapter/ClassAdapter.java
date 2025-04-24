@@ -21,6 +21,7 @@ public class ClassAdapter extends RecyclerView.Adapter<ClassAdapter.VH> {
     public interface Listener {
         void onEdit(@NonNull ClassModel item);
         void onDelete(@NonNull ClassModel item);
+        void onItemClick(@NonNull ClassModel item);
     }
 
     private final List<ClassModel> data = new ArrayList<>();
@@ -91,7 +92,9 @@ public class ClassAdapter extends RecyclerView.Adapter<ClassAdapter.VH> {
                                 R.color.text_black));
             h.tvClassType.setText("Type: " + type);
         }
-        
+
+        // card clickable
+        h.itemView.setOnClickListener(v -> listener.onItemClick(it));
 
         // Button callbacks
         h.btnEditClass.setOnClickListener(v -> listener.onEdit(it));

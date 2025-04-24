@@ -92,6 +92,23 @@ public class HomeFragment extends Fragment {
                         .setNegativeButton("Cancel", null)
                         .show();
             }
+            @Override
+            public void onItemClick(@NonNull ClassModel item) {
+                Bundle args = new Bundle();
+                args.putLong   ("classId",      item.getId());
+                args.putString ("title",        item.getTitle());
+                args.putString ("dayCsv",       item.getDay());
+                args.putString ("time",         item.getTime());
+                args.putInt    ("capacity",     item.getCapacity());
+                args.putInt    ("duration",     item.getDuration());
+                args.putFloat  ("price",        (float)item.getPrice());
+                args.putString ("teacher",      item.getTeacherName());
+                args.putString ("type",         item.getType());
+                args.putString ("description",  item.getDescription());
+
+                NavController nav = NavHostFragment.findNavController(HomeFragment.this);
+                nav.navigate(R.id.action_navigation_home_to_navigation_class_details, args);
+            }
         });
         binding.recyclerViewClasses.setAdapter(adapter);
 
