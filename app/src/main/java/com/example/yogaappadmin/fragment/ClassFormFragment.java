@@ -33,6 +33,9 @@ public class ClassFormFragment extends Fragment {
     private DatabaseHelper dbHelper;
     private long classId = -1;
 
+    // store the incoming type so can re-select it after loading the spinner
+    private String initialTypeName = null;
+
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container,
@@ -49,7 +52,7 @@ public class ClassFormFragment extends Fragment {
         dbHelper = new DatabaseHelper(requireContext());
 
         setupTeacherSpinner();
-        setupTypeSpinner();      // initially disabled
+        setupTypeSpinner();      // disabled until teacher is chosen
         setupTimePicker();
 
         binding.buttonBack.setOnClickListener(v ->
@@ -74,11 +77,9 @@ public class ClassFormFragment extends Fragment {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         binding.spinnerTeacher.setAdapter(adapter);
 
-        // When teacher changes, reload the type spinner
         binding.spinnerTeacher.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 if (position == 0) {
-                    // no teacher chosen → disable type spinner
                     binding.spinnerClassType.setEnabled(false);
                     ArrayAdapter<String> empty = new ArrayAdapter<>(
                             requireContext(),
@@ -87,8 +88,8 @@ public class ClassFormFragment extends Fragment {
                     );
                     empty.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                     binding.spinnerClassType.setAdapter(empty);
+
                 } else {
-                    // load that teacher’s CSV of types
                     String teacherName = names.get(position);
                     TeacherModel chosen = null;
                     for (TeacherModel t : teachers) {
@@ -97,6 +98,7 @@ public class ClassFormFragment extends Fragment {
                             break;
                         }
                     }
+
                     List<String> typesList = new ArrayList<>();
                     typesList.add("Select Type");
                     if (chosen != null && !TextUtils.isEmpty(chosen.getClassesCsv())) {
@@ -104,6 +106,7 @@ public class ClassFormFragment extends Fragment {
                             typesList.add(ty.trim());
                         }
                     }
+
                     ArrayAdapter<String> ta = new ArrayAdapter<>(
                             requireContext(),
                             android.R.layout.simple_spinner_item,
@@ -112,6 +115,16 @@ public class ClassFormFragment extends Fragment {
                     ta.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                     binding.spinnerClassType.setAdapter(ta);
                     binding.spinnerClassType.setEnabled(true);
+
+                    // after loading, if editing, select the initial type
+                    if (initialTypeName != null) {
+                        int idx = typesList.indexOf(initialTypeName);
+                        if (idx >= 0) {
+                            binding.spinnerClassType.setSelection(idx);
+                        }
+                        // only once!
+                        initialTypeName = null;
+                    }
                 }
             }
             @Override public void onNothingSelected(AdapterView<?> parent) {}
@@ -119,7 +132,6 @@ public class ClassFormFragment extends Fragment {
     }
 
     private void setupTypeSpinner() {
-        // Start disabled with only the placeholder
         binding.spinnerClassType.setEnabled(false);
         ArrayAdapter<String> adapter = new ArrayAdapter<>(
                 requireContext(),
@@ -154,48 +166,39 @@ public class ClassFormFragment extends Fragment {
     private void prefillIfEdit() {
         Bundle args = getArguments();
         if (args != null && args.containsKey("classId") && args.getLong("classId", -1L) >= 0) {
-            // EDIT MODE
             classId = args.getLong("classId");
 
             binding.tvAddClassTitle.setText("Edit Class");
             binding.buttonSaveCourse.setText("Update Class");
 
-            // prefill all fields, including selecting teacher → triggers type reload
             binding.editTextTitle.setText(args.getString("title", ""));
             binding.editTextTime.setText(args.getString("time", ""));
             binding.editTextCapacity.setText(String.valueOf(args.getInt("capacity", 0)));
             binding.editTextDuration.setText(String.valueOf(args.getInt("duration", 0)));
-            binding.editTextPrice.setText(String.valueOf(args.getFloat("price", 0.0f)));
+            binding.editTextPrice.setText(String.valueOf(args.getFloat("price", 0f)));
             binding.editTextDescription.setText(args.getString("description", ""));
 
-            // precheck days
             String dayCsv = args.getString("dayCsv", "");
             if (!TextUtils.isEmpty(dayCsv)) {
                 MaterialButtonToggleGroup tg = binding.toggleGroupDays.getRoot();
                 for (String d : dayCsv.split(",")) {
                     int btnId = getResources().getIdentifier(
-                            "btn" + d, "id", requireContext().getPackageName()
-                    );
+                            "btn" + d, "id", requireContext().getPackageName());
                     if (btnId != 0) tg.check(btnId);
                 }
             }
 
-            // select teacher (this fires the onItemSelected, reloading types)
+            // remember this so can select it after the spinner reloads
+            initialTypeName = args.getString("type", "");
+
+            // select teacher (fires onItemSelected -> reload types -> apply initialTypeName)
             ArrayAdapter<String> teachAdapter =
                     (ArrayAdapter<String>) binding.spinnerTeacher.getAdapter();
             int teachPos = teachAdapter.getPosition(args.getString("teacher", ""));
-            if (teachPos >= 0) binding.spinnerTeacher.setSelection(teachPos);
-
-            // after reload, select the class type
-            binding.spinnerClassType.post(() -> {
-                ArrayAdapter<String> typeAdapter =
-                        (ArrayAdapter<String>) binding.spinnerClassType.getAdapter();
-                int typePos = typeAdapter.getPosition(args.getString("type", ""));
-                if (typePos >= 0) binding.spinnerClassType.setSelection(typePos);
-            });
-
+            if (teachPos >= 0) {
+                binding.spinnerTeacher.setSelection(teachPos);
+            }
         } else {
-            // ADD MODE
             binding.tvAddClassTitle.setText("Add New Class");
             binding.buttonSaveCourse.setText("Add Class");
         }
@@ -203,7 +206,7 @@ public class ClassFormFragment extends Fragment {
 
     private void setupSaveListener() {
         binding.buttonSaveCourse.setOnClickListener(v -> {
-            // same validations as before...
+            // validation & save logic
             String title = binding.editTextTitle.getText().toString().trim();
             if (TextUtils.isEmpty(title)) {
                 binding.editTextTitle.setError("Title required");

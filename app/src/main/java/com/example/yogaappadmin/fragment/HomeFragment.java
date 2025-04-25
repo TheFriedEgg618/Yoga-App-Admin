@@ -58,13 +58,13 @@ public class HomeFragment extends Fragment {
             @Override
             public void onEdit(@NonNull ClassModel item) {
                 Bundle args = new Bundle();
-                args.putLong("classId",      item.getId());
+                args.putLong  ("classId",      item.getId());
                 args.putString("title",      item.getTitle());
                 args.putString("dayCsv",     item.getDay());
                 args.putString("time",       item.getTime());
-                args.putInt("capacity",      item.getCapacity());
-                args.putInt("duration",      item.getDuration());
-                args.putFloat("price",       (float)item.getPrice());
+                args.putInt   ("capacity",      item.getCapacity());
+                args.putInt   ("duration",      item.getDuration());
+                args.putFloat ("price",       (float)item.getPrice());
                 args.putString("teacher",    item.getTeacherName());
                 args.putString("type",       item.getType());
                 args.putString("description",item.getDescription());

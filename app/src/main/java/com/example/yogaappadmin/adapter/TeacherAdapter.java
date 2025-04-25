@@ -47,7 +47,7 @@ public class TeacherAdapter extends RecyclerView.Adapter<TeacherAdapter.VH> {
     public void onBindViewHolder(@NonNull VH holder, int position) {
         TeacherModel teacher = data.get(position);
 
-        // — Bio (same as before) —
+        // — Bio  —
         String bio = teacher.getBio();
         if (bio.isBlank()) { bio = "N/A"; }
         holder.tvBio.setText("Bio: " + bio);
@@ -70,7 +70,7 @@ public class TeacherAdapter extends RecyclerView.Adapter<TeacherAdapter.VH> {
             holder.tvClasses.setText("Teaches: " + csv);
         }
 
-        // — Name (you might also want to flag missing names, but up to you) —
+        // — Name —
         holder.tvName.setText(teacher.getName());
 
         // — Button callbacks —

@@ -19,7 +19,7 @@ public class YogaTypeFormFragment extends Fragment {
 
     private FragmentYogaTypeFormBinding binding;
     private DatabaseHelper dbHelper;
-    // if >= 0, we're editing an existing type
+    // if >= 0, editing an existing type
     private long typeId = -1;
 
     @Override
