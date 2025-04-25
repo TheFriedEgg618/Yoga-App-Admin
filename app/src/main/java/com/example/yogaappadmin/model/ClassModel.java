@@ -1,4 +1,3 @@
-// ClassModel.java
 package com.example.yogaappadmin.model;
 
 public class ClassModel {

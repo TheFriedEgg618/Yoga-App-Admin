@@ -1,4 +1,3 @@
-// YogaTypeModel.java
 package com.example.yogaappadmin.model;
 
 public class YogaTypeModel {

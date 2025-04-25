@@ -7,6 +7,7 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
@@ -19,7 +20,6 @@ import androidx.navigation.fragment.NavHostFragment;
 import com.example.yogaappadmin.data.DatabaseHelper;
 import com.example.yogaappadmin.databinding.FragmentClassFormBinding;
 import com.example.yogaappadmin.model.TeacherModel;
-import com.example.yogaappadmin.model.YogaTypeModel;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.button.MaterialButtonToggleGroup;
 
@@ -49,7 +49,7 @@ public class ClassFormFragment extends Fragment {
         dbHelper = new DatabaseHelper(requireContext());
 
         setupTeacherSpinner();
-        setupTypeSpinner();
+        setupTypeSpinner();      // initially disabled
         setupTimePicker();
 
         binding.buttonBack.setOnClickListener(v ->
@@ -73,18 +73,58 @@ public class ClassFormFragment extends Fragment {
         );
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         binding.spinnerTeacher.setAdapter(adapter);
+
+        // When teacher changes, reload the type spinner
+        binding.spinnerTeacher.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if (position == 0) {
+                    // no teacher chosen → disable type spinner
+                    binding.spinnerClassType.setEnabled(false);
+                    ArrayAdapter<String> empty = new ArrayAdapter<>(
+                            requireContext(),
+                            android.R.layout.simple_spinner_item,
+                            List.of("Select Type")
+                    );
+                    empty.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                    binding.spinnerClassType.setAdapter(empty);
+                } else {
+                    // load that teacher’s CSV of types
+                    String teacherName = names.get(position);
+                    TeacherModel chosen = null;
+                    for (TeacherModel t : teachers) {
+                        if (t.getName().equals(teacherName)) {
+                            chosen = t;
+                            break;
+                        }
+                    }
+                    List<String> typesList = new ArrayList<>();
+                    typesList.add("Select Type");
+                    if (chosen != null && !TextUtils.isEmpty(chosen.getClassesCsv())) {
+                        for (String ty : chosen.getClassesCsv().split(",")) {
+                            typesList.add(ty.trim());
+                        }
+                    }
+                    ArrayAdapter<String> ta = new ArrayAdapter<>(
+                            requireContext(),
+                            android.R.layout.simple_spinner_item,
+                            typesList
+                    );
+                    ta.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                    binding.spinnerClassType.setAdapter(ta);
+                    binding.spinnerClassType.setEnabled(true);
+                }
+            }
+            @Override public void onNothingSelected(AdapterView<?> parent) {}
+        });
     }
 
     private void setupTypeSpinner() {
-        List<YogaTypeModel> types = dbHelper.getAllYogaTypesModels();
-        List<String> names = new ArrayList<>();
-        names.add("Select Type");
-        for (YogaTypeModel y : types) names.add(y.getTypeName());
-
+        // Start disabled with only the placeholder
+        binding.spinnerClassType.setEnabled(false);
         ArrayAdapter<String> adapter = new ArrayAdapter<>(
                 requireContext(),
                 android.R.layout.simple_spinner_item,
-                names
+                List.of("Select Type")
         );
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         binding.spinnerClassType.setAdapter(adapter);
@@ -120,8 +160,15 @@ public class ClassFormFragment extends Fragment {
             binding.tvAddClassTitle.setText("Edit Class");
             binding.buttonSaveCourse.setText("Update Class");
 
+            // prefill all fields, including selecting teacher → triggers type reload
             binding.editTextTitle.setText(args.getString("title", ""));
+            binding.editTextTime.setText(args.getString("time", ""));
+            binding.editTextCapacity.setText(String.valueOf(args.getInt("capacity", 0)));
+            binding.editTextDuration.setText(String.valueOf(args.getInt("duration", 0)));
+            binding.editTextPrice.setText(String.valueOf(args.getFloat("price", 0.0f)));
+            binding.editTextDescription.setText(args.getString("description", ""));
 
+            // precheck days
             String dayCsv = args.getString("dayCsv", "");
             if (!TextUtils.isEmpty(dayCsv)) {
                 MaterialButtonToggleGroup tg = binding.toggleGroupDays.getRoot();
@@ -133,24 +180,20 @@ public class ClassFormFragment extends Fragment {
                 }
             }
 
-            binding.editTextTime.setText(args.getString("time", ""));
-            binding.editTextCapacity.setText(String.valueOf(args.getInt("capacity", 0)));
-            binding.editTextDuration.setText(String.valueOf(args.getInt("duration", 0)));
-            binding.editTextPrice.setText(String.valueOf(args.getFloat("price", 0.0f)));
-
-            String teacher = args.getString("teacher", "");
+            // select teacher (this fires the onItemSelected, reloading types)
             ArrayAdapter<String> teachAdapter =
                     (ArrayAdapter<String>) binding.spinnerTeacher.getAdapter();
-            int posT = teachAdapter.getPosition(teacher);
-            if (posT >= 0) binding.spinnerTeacher.setSelection(posT);
+            int teachPos = teachAdapter.getPosition(args.getString("teacher", ""));
+            if (teachPos >= 0) binding.spinnerTeacher.setSelection(teachPos);
 
-            String type = args.getString("type", "");
-            ArrayAdapter<String> typeAdapter =
-                    (ArrayAdapter<String>) binding.spinnerClassType.getAdapter();
-            int posC = typeAdapter.getPosition(type);
-            if (posC >= 0) binding.spinnerClassType.setSelection(posC);
+            // after reload, select the class type
+            binding.spinnerClassType.post(() -> {
+                ArrayAdapter<String> typeAdapter =
+                        (ArrayAdapter<String>) binding.spinnerClassType.getAdapter();
+                int typePos = typeAdapter.getPosition(args.getString("type", ""));
+                if (typePos >= 0) binding.spinnerClassType.setSelection(typePos);
+            });
 
-            binding.editTextDescription.setText(args.getString("description", ""));
         } else {
             // ADD MODE
             binding.tvAddClassTitle.setText("Add New Class");
@@ -160,15 +203,14 @@ public class ClassFormFragment extends Fragment {
 
     private void setupSaveListener() {
         binding.buttonSaveCourse.setOnClickListener(v -> {
-            // Title
+            // same validations as before...
             String title = binding.editTextTitle.getText().toString().trim();
             if (TextUtils.isEmpty(title)) {
                 binding.editTextTitle.setError("Title required");
                 Toast.makeText(getContext(), "Title is required", Toast.LENGTH_SHORT).show();
                 return;
             }
-
-            // Days CSV
+            // days
             MaterialButtonToggleGroup tg = binding.toggleGroupDays.getRoot();
             StringBuilder sb = new StringBuilder();
             for (int id : tg.getCheckedButtonIds()) {
@@ -181,66 +223,49 @@ public class ClassFormFragment extends Fragment {
                 Toast.makeText(getContext(), "Please select at least one day", Toast.LENGTH_SHORT).show();
                 return;
             }
-
-            // Time
+            // time
             String time = binding.editTextTime.getText().toString().trim();
             if (TextUtils.isEmpty(time)) {
                 binding.editTextTime.setError("Time required");
                 Toast.makeText(getContext(), "Time is required", Toast.LENGTH_SHORT).show();
                 return;
             }
-
-            // Capacity
-            String capStr = binding.editTextCapacity.getText().toString().trim();
+            // capacity
             int capacity;
-            try {
-                capacity = Integer.parseInt(capStr);
-                if (capacity <= 0) throw new NumberFormatException();
-            } catch (Exception e) {
+            try { capacity = Integer.parseInt(binding.editTextCapacity.getText().toString()); }
+            catch (Exception e) {
                 binding.editTextCapacity.setError("Valid capacity required");
                 Toast.makeText(getContext(), "Please enter a valid capacity", Toast.LENGTH_SHORT).show();
                 return;
             }
-
-            // Duration
-            String durStr = binding.editTextDuration.getText().toString().trim();
+            // duration
             int duration;
-            try {
-                duration = Integer.parseInt(durStr);
-                if (duration <= 0) throw new NumberFormatException();
-            } catch (Exception e) {
+            try { duration = Integer.parseInt(binding.editTextDuration.getText().toString()); }
+            catch (Exception e) {
                 binding.editTextDuration.setError("Valid duration required");
                 Toast.makeText(getContext(), "Please enter a valid duration", Toast.LENGTH_SHORT).show();
                 return;
             }
-
-            // Price
-            String prStr = binding.editTextPrice.getText().toString().trim();
+            // price
             double price;
-            try {
-                price = Double.parseDouble(prStr);
-                if (price < 0) throw new NumberFormatException();
-            } catch (Exception e) {
+            try { price = Double.parseDouble(binding.editTextPrice.getText().toString()); }
+            catch (Exception e) {
                 binding.editTextPrice.setError("Valid price required");
                 Toast.makeText(getContext(), "Please enter a valid price", Toast.LENGTH_SHORT).show();
                 return;
             }
-
-            // Teacher
+            // teacher
             String teacher = binding.spinnerTeacher.getSelectedItem().toString();
             if ("Select Teacher".equals(teacher)) {
                 Toast.makeText(getContext(), "Please select a teacher", Toast.LENGTH_SHORT).show();
                 return;
             }
-
-            // Type
+            // type
             String type = binding.spinnerClassType.getSelectedItem().toString();
             if ("Select Type".equals(type)) {
                 Toast.makeText(getContext(), "Please select a class type", Toast.LENGTH_SHORT).show();
                 return;
             }
-
-            // Description
             String desc = binding.editTextDescription.getText().toString().trim();
 
             boolean success;
